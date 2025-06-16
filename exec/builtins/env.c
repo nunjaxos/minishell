@@ -6,13 +6,13 @@
 /*   By: abhmidat <abhmidat@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2025/06/11 14:57:22 by abhmidat          #+#    #+#             */
-/*   Updated: 2025/06/13 14:25:34 by abhmidat         ###   ########.fr       */
+/*   Updated: 2025/06/15 11:40:33 by abhmidat         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "minishell.h"
 
-t_env *g_envp = NULL;
+// t_env *g_envp = NULL;
 
 t_env *create_env_node(const char *env)
 {
@@ -22,9 +22,12 @@ t_env *create_env_node(const char *env)
 	char *sep = strchr(env, '=');
 	if (!sep)
 		return (free(node), NULL);
-
 	node->name = ft_strndup(env, sep - env);
+	if (!node->name)
+    	return (free(node), NULL);
 	node->content = strdup(sep + 1);
+	if (!node->content)
+    	return (free(node->name), free(node), NULL);
 	node->next = NULL;
 	return node;
 }
@@ -68,18 +71,18 @@ void free_env_list(t_env *env)
     }
 }
 
-int main(int ac, char **av, char **envp)
-{
-	(void)ac;
-	(void)av;
-	init_env_list(envp);
+// int main(int ac, char **av, char **envp)
+// {
+// 	(void)ac;
+// 	(void)av;
+// 	init_env_list(envp);
 	
-	t_v *tmp = g_envp;
-	while (tmp)
-	{
-		printf("%s=%s\n", tmp->name, tmp->content);
-		tmp = tmp->next;
-	}
-	free_env_list(tmp);
-	return 0;
-}
+// 	t_env *tmp = g_envp;
+// 	while (tmp)
+// 	{
+// 		printf("%s=%s\n", tmp->name, tmp->content);
+// 		tmp = tmp->next;
+// 	}
+// 	free_env_list(g_envp);
+// 	return 0;
+// }
