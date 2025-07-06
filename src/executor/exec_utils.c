@@ -1,14 +1,15 @@
 
 #include "../../include/executor.h"
 
-int	count_all_commands(t_cmd **cmds)
+int	count_commands(t_cmd *cmd)
 {
-	int	i;
-
-	i = 0;
-	while (cmds[i])
-		i++;
-	return (i);
+	int count = 0;
+	while (cmd)
+	{
+		count++;
+		cmd = cmd->next;
+	}
+	return (count);
 }
 
 int	get_size(t_env *env)

@@ -65,13 +65,11 @@ typedef struct s_redirection
 typedef struct s_cmd
 {
 	char					**args;
-	int						count;
-	t_perms					access;
 	int						in_fd;
 	int						out_fd;
-	pid_t					pid;
 	t_redirection			*redirections;
-}							t_cmd;
+	struct s_cmd			*next;
+} t_cmd							t_cmd;
 
 typedef struct s_env
 {
@@ -89,6 +87,15 @@ typedef struct s_expand
 	struct s_expand			*next;
 }							t_expand;
 
+typedef struct s_exec
+{
+	t_cmd		*cmds;      // head of pipeline
+	t_env		*env;       // environment
+	int			n_pipes;    // number of pipes
+	int			**pipes;    // pipe fds
+} t_exec;
+
+
 typedef struct s_alloc
 {
 	void					*allocated;
@@ -101,7 +108,7 @@ typedef struct s_parser
 	char					**result;
 	char					*prompt;
 	t_token					*head;
-	t_cmd					**cmd;
+	t_cmd					*cmd;
 	t_env					*env;
 	t_expand				*expand;
 	t_alloc					*alloc;
