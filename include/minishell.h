@@ -1,3 +1,14 @@
+/* ************************************************************************** */
+/*                                                                            */
+/*                                                        :::      ::::::::   */
+/*   minishell.h                                        :+:      :+:    :+:   */
+/*                                                    +:+ +:+         +:+     */
+/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
+/*                                                +#+#+#+#+#+   +#+           */
+/*   Created: 2024/08/03 18:06:37 by amouhand          #+#    #+#             */
+/*   Updated: 2024/09/05 20:12:42 by amouhand         ###   ########.fr       */
+/*                                                                            */
+/* ************************************************************************** */
 
 #ifndef MINISHELL_H
 # define MINISHELL_H
@@ -69,7 +80,7 @@ typedef struct s_cmd
 	int						out_fd;
 	t_redirection			*redirections;
 	struct s_cmd			*next;
-} t_cmd							t_cmd;
+}							t_cmd;
 
 typedef struct s_env
 {
@@ -89,10 +100,10 @@ typedef struct s_expand
 
 typedef struct s_exec
 {
-	t_cmd		*cmds;      // head of pipeline
-	t_env		*env;       // environment
-	int			n_pipes;    // number of pipes
-	int			**pipes;    // pipe fds
+        t_cmd           *cmds;      // head of pipeline
+        t_env           *env;       // environment
+        int                     n_pipes;    // number of pipes
+        int                     **pipes;    // pipe fds
 } t_exec;
 
 
