@@ -1,29 +1,18 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   built_utils.c                                      :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/11 04:15:00 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/08/22 01:00:48 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/builtins.h"
 
-int	check_for_child(pid_t pid, int exit_stat)
+int	check_for_child(pid_t pid, int exit_stat, t_data *data) 
 {
 	if (pid == 0)
 	{
-		get_parser()->exit_status = exit_stat;
-		free_parser(get_parser());
+		data->exit_status = exit_stat;
+		free_parser(data);
 		exit(exit_stat);
 	}
 	else
-		get_parser()->exit_status = exit_stat;
+		data->exit_status = exit_stat;
 	return (0);
 }
+
 
 t_env	*copy_env_list(t_env *env)
 {
@@ -38,7 +27,7 @@ t_env	*copy_env_list(t_env *env)
 		new = ft_malloc(sizeof(t_env));
 		if (!new)
 			return (NULL);
-		new->key = ft_strdup(tmp->key);
+		new->name = ft_strdup(tmp->name);
 		new->value = ft_strdup(tmp->value);
 		new->next = NULL;
 		if (!head)
@@ -65,11 +54,11 @@ void	sort_env_list(t_env *env)
 		tmp2 = tmp->next;
 		while (tmp2)
 		{
-			if (ft_strcmp(tmp->key, tmp2->key) > 0)
+			if (ft_strcmp(tmp->name, tmp2->name) > 0)
 			{
-				temp = tmp->key;
-				tmp->key = tmp2->key;
-				tmp2->key = temp;
+				temp = tmp->name;
+				tmp->name = tmp2->name;
+				tmp2->name = temp;
 				temp = tmp->value;
 				tmp->value = tmp2->value;
 				tmp2->value = temp;
@@ -80,31 +69,31 @@ void	sort_env_list(t_env *env)
 	}
 }
 
-int	env_key_exists(t_env *env, char *key)
+int	env_name_exists(t_env *env, char *name)
 {
 	t_env	*tmp;
 
 	tmp = env;
 	while (tmp)
 	{
-		if (!ft_strcmp(tmp->key, key))
+		if (!ft_strcmp(tmp->name, name))
 			return (1);
 		tmp = tmp->next;
 	}
 	return (0);
 }
 
-int	check_valid_key(char *key)
+int	check_valid_name(char *name)
 {
 	int	i;
 
 	i = 0;
-	if (!ft_isalpha(key[i]) && key[i] != '_')
+	if (!ft_isalpha(name[i]) && name[i] != '_')
 		return (0);
 	i++;
-	while (key[i])
+	while (name[i])
 	{
-		if (!ft_isalnum(key[i]) && key[i] != '_')
+		if (!ft_isalnum(name[i]) && name[i] != '_')
 			return (0);
 		i++;
 	}

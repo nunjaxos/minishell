@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   more_utils.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/12 10:58:25 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/08/29 08:43:51 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/executor.h"
 
 int	*get_lastpid(void)
@@ -24,7 +12,7 @@ void	error_display_norm(t_cmd *cmd)
 	if (cmd->access == NOT_AVAIL)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->args[0], 2);
+		ft_putstr_fd(cmd->full_cmd[0], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
 		free_parser(get_parser());
 		exit(127);
@@ -32,7 +20,7 @@ void	error_display_norm(t_cmd *cmd)
 	else if (cmd->access == NOT_EXEC)
 	{
 		ft_putstr_fd("minishell: ", 2);
-		ft_putstr_fd(cmd->args[0], 2);
+		ft_putstr_fd(cmd->full_cmd[0], 2);
 		ft_putstr_fd(": Permission denied\n", 2);
 		free_parser(get_parser());
 		exit(126);
@@ -50,7 +38,7 @@ void	error_display(t_cmd *cmd)
 		}
 		if (cmd->access == CMD_NOT_FOUND)
 		{
-			ft_putstr_fd(cmd->args[0], 2);
+			ft_putstr_fd(cmd->full_cmd[0], 2);
 			ft_putstr_fd(" : command not found\n", 2);
 			free_parser(get_parser());
 			exit(127);
@@ -58,7 +46,7 @@ void	error_display(t_cmd *cmd)
 		else if (cmd->access == IS_A_DIR)
 		{
 			ft_putstr_fd("minishell: ", 2);
-			ft_putstr_fd(cmd->args[0], 2);
+			ft_putstr_fd(cmd->full_cmd[0], 2);
 			ft_putstr_fd(": Is a directory\n", 2);
 			free_parser(get_parser());
 			exit(126);
@@ -67,7 +55,7 @@ void	error_display(t_cmd *cmd)
 	}
 }
 
-void	pipe_utils(t_cmd *cmd, int status)
+void	pipe_utils(t_cmd *cmd, int status, t_data *data)
 {
 	if (cmd->pid != *get_lastpid())
 		waitpid(cmd->pid, &status, 0);
@@ -75,8 +63,8 @@ void	pipe_utils(t_cmd *cmd, int status)
 	{
 		waitpid(cmd->pid, &status, 0);
 		if (WIFEXITED(status))
-			get_parser()->exit_status = WEXITSTATUS(status);
+			data->exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-			get_parser()->exit_status = WTERMSIG(status) + 128;
+			data->exit_status = WTERMSIG(status) + 128;
 	}
 }

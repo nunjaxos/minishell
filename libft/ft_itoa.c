@@ -3,59 +3,64 @@
 /*                                                        :::      ::::::::   */
 /*   ft_itoa.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/04 20:02:20 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/19 02:12:20 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/10 11:03:24 by handler           #+#    #+#             */
+/*   Updated: 2022/11/11 14:16:58 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
-#include <stdio.h>
 
-static unsigned int	number_count(int n)
+static int	count_nbr(int nbr)
 {
-	unsigned int	length;
+	int				count;
+	unsigned int	n;
 
-	length = 0;
-	if (n == 0)
-		length = 1;
-	if (n < 0)
+	count = 1;
+	if (nbr < 0)
 	{
-		length++;
+		n = -nbr;
+		++count;
 	}
-	while (n != 0)
+	else
+		n = nbr;
+	while (n >= 10)
 	{
 		n /= 10;
-		length++;
+		++count;
 	}
-	return (length);
+	return (count);
 }
 
 char	*ft_itoa(int n)
 {
-	char			*result;
-	unsigned int	count;
-	unsigned int	number;
+	char			*str;
+	int				i;
+	unsigned int	t;
 
-	count = number_count(n);
-	number = n;
-	result = (char *)ft_malloc((sizeof(char)) * (count + 1));
-	if (!result)
+	i = count_nbr(n);
+	str = malloc(sizeof(char) * (i + 1));
+	if (!str)
 		return (NULL);
-	if (number == 0)
-		result[0] = '0';
 	if (n < 0)
+		t = -n;
+	else
+		t = n;
+	str[i] = '\0';
+	while (--i >= 0)
 	{
-		result[0] = '-';
-		number = -n;
+		str[i] = (t % 10) + 48;
+		t /= 10;
 	}
-	result[count] = '\0';
-	while (number > 0)
-	{
-		result[count - 1] = (number % 10) + '0';
-		number = number / 10;
-		count--;
-	}
-	return (result);
+	if (n < 0)
+		str[0] = '-';
+	return (str);
 }
+
+// int main()
+// {
+//     printf("%s\n", ft_itoa(-123456789));
+//     printf("%s\n", ft_itoa(-2147483648));
+//     printf("%s\n", ft_itoa(2147483647));
+// }

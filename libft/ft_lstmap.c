@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   ft_lstmap_bonus.c                                  :+:      :+:    :+:   */
+/*   ft_lstmap.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/09 23:55:21 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/18 02:06:28 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/11 16:18:27 by handler           #+#    #+#             */
+/*   Updated: 2022/11/14 18:13:19 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,22 @@
 
 t_list	*ft_lstmap(t_list *lst, void *(*f)(void *), void (*del)(void *))
 {
-	t_list	*ptr;
 	t_list	*new;
-	void	*c;
+	t_list	*first;
 
-	if (!del || !f || !lst)
-		return (0);
-	new = NULL;
-	while (lst)
+	if (!lst)
+		return (NULL);
+	first = NULL;
+	while (lst && f && del)
 	{
-		c = f(lst->content);
-		ptr = ft_lstnew(c);
-		ft_lstadd_back(&new, ptr);
-		if (!ptr)
+		new = ft_lstnew(f(lst->content));
+		if (!new)
 		{
-			ft_lstclear(&new, del);
-			del(c);
-			return (0);
+			ft_lstclear(&first, del);
+			return (NULL);
 		}
-		lst = lst->next;
+		ft_lstadd_back(&first, new);
+		lst = lst -> next;
 	}
-	return (new);
+	return (first);
 }

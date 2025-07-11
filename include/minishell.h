@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   minishell.h                                        :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/03 18:06:37 by amouhand          #+#    #+#             */
-/*   Updated: 2024/09/05 20:12:42 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef MINISHELL_H
 # define MINISHELL_H
 
@@ -48,15 +36,8 @@ typedef enum perms
 	IS_BUILTIN,
 	NULL_CMD,
 }							t_perms;
-typedef enum s_type
-{
-	WORD = 1,
-	PIPE,
-	REDIR,
-	INPUT,
-	APPEND,
-	HEREDOC,
-}							t_type;
+
+typedef enum e_type t_type;
 
 typedef struct s_token
 {
@@ -73,22 +54,6 @@ typedef struct s_redirection
 	struct s_redirection	*next;
 }							t_redirection;
 
-typedef struct s_cmd
-{
-	char					**args;
-	int						in_fd;
-	int						out_fd;
-	t_redirection			*redirections;
-	struct s_cmd			*next;
-}							t_cmd;
-
-typedef struct s_env
-{
-	char					*key;
-	char					*value;
-	struct s_env			*next;
-}							t_env;
-
 typedef struct s_expand
 {
 	char					*content;
@@ -97,15 +62,6 @@ typedef struct s_expand
 	bool					in_double_quotes;
 	struct s_expand			*next;
 }							t_expand;
-
-typedef struct s_exec
-{
-        t_cmd           *cmds;      // head of pipeline
-        t_env           *env;       // environment
-        int                     n_pipes;    // number of pipes
-        int                     **pipes;    // pipe fds
-} t_exec;
-
 
 typedef struct s_alloc
 {
@@ -127,14 +83,12 @@ typedef struct s_parser
 	int						heredoc_abort;
 }							t_parser;
 
-t_parser					*readfrom(char **env);
-int							print_error(char *msg, int code);
-t_parser					*init_parser(char **env);
-int							read_input(t_parser *parser);
-int							parse_input(t_parser *parser);
-int							tokenize_input(t_parser *parser);
-void						maintain_parser(t_parser *parser);
-void						parser_subfree(t_parser *parser);
-t_parser					*get_parser(void);
+typedef struct s_exec
+{
+	t_cmd			*cmds;
+	t_env			*env;
+	int				n_pipes;
+	int				**pipes;
+}							t_exec;
 
 #endif

@@ -1,30 +1,16 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   executor.c                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/20 20:18:48 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/28 22:34:17 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/executor.h"
 
-int	execute_commands(t_parser *parser)
+int	execute_commands(t_data *data)
 {
-	t_cmd *cmd = parser->head; // get linked list
+	t_cmd	*cmd = data->head;
+	int		cmd_count = count_commands(cmd);
 
-	if (count_commands(cmd) == 1)
-	{
-		update_last_cmd(get_parser());
-		exec_one_command(cmd, parser);
-	}
+	update_last_cmd(data); // Set `_` env var with last command
+
+	if (cmd_count == 1)
+		exec_one_command(cmd, data);
 	else
-	{
-		update_last_cmd(get_parser());
-		create_pipe(cmd, count_commands(cmd));
-	}
+		create_pipe(cmd, cmd_count, data);
+
 	return (0);
 }

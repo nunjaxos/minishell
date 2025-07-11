@@ -3,38 +3,117 @@
 /*                                                        :::      ::::::::   */
 /*   lexer_utils.c                                      :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: abnemili <abnemili@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/17 01:38:09 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/03 18:13:58 by amouhand         ###   ########.fr       */
+/*   Created: 2025/06/26 22:45:07 by abnemili          #+#    #+#             */
+/*   Updated: 2025/06/27 14:32:33 by abnemili         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/minishell.h"
+#include "minishell.h"
 
-void	ft_strcpy(char *dst, char *src)
+void	handle_quote(const char *input, int *i, t_elem **head)
 {
-	int	i;
+	char			quote;
+	enum e_state	state;
+	int				start;
 
-	if (!src)
-		return ;
-	i = 0;
-	while (src[i])
+	quote = input[(*i)++];
+	state = (quote == '\'') ? IN_QUOTE : IN_DQUOTE;
+	start = *i;
+	while (input[*i] && input[*i] != quote)
+		(*i)++;
+	if (*i == start)
 	{
-		dst[i] = src[i];
-		i++;
+		if (input[*i] == quote)
+			(*i)++;
+		return ;
 	}
-	dst[i] = '\0';
+	if (!create_content_token(input, start, *i, head, state))
+		return ;
+	if (input[*i] == quote)
+		(*i)++;
 }
 
-int	ft_strcmp(char *s1, char *s2)
+int	handle_redirections(const char *input, int i, t_elem **head)
 {
-	int	i;
+	enum e_type	type;
+	int			start;
+	char		*content;
+	t_elem		*token;
 
-	if (!s1 || !s2)
-		return (1);
-	i = 0;
-	while (s1[i] && s2[i] && s1[i] == s2[i])
+	start = i;
+	if (input[i] == '>' && input[i + 1] && input[i + 1] == '>')
+	{
+		type = DREDIR_OUT;
+		i += 2;
+	}
+	else if (input[i] == '<' && input[i + 1] && input[i + 1] == '<')
+	{
+		type = HERE_DOC;
+		i += 2;
+	}
+	else if (input[i] == '>')
+	{
+		type = REDIR_OUT;
 		i++;
-	return (s1[i] - s2[i]);
+	}
+	else
+	{
+		type = REDIR_IN;
+		i++;
+	}
+	content = ft_strndup(input + start, i - start);
+	if (!content)
+		return (-1);
+	token = create_token(content, type, GENERAL);
+	free(content);
+	if (!token)
+		return (-1);
+	append_token(head, token);
+	return (i);
+}
+
+static int	create_env_word_token(const char *input, int start, int end,
+								t_elem **head, enum e_type type)
+{
+	char	*content;
+	t_elem	*token;
+
+	content = ft_strndup(&input[start], end - start);
+	if (!content)
+		return (0);
+	token = create_token(content, type, GENERAL);
+	free(content);
+	if (!token)
+		return (0);
+	append_token(head, token);
+	return (1);
+}
+
+int	handle_env(const char *input, int *i, t_elem **head)
+{
+	int	start;
+
+	start = *i;
+	if (input[*i] != '$')
+		return (*i);
+	(*i)++;
+	if (input[*i] == '\0' || input[*i] == ' ')
+	{
+		if (!create_env_word_token("$", 0, 1, head, WORD))
+			return (-1);
+		return (*i);
+	}
+	if (ft_isalpha(input[*i]) || input[*i] == '_')
+	{
+		while (ft_isalnum(input[*i]) || input[*i] == '_')
+			(*i)++;
+		if (!create_env_word_token(input, start, *i, head, ENV))
+			return (-1);
+		return (*i);
+	}
+	if (!create_env_word_token("$", 0, 1, head, WORD))
+		return (-1);
+	return (*i);
 }

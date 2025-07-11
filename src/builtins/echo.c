@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   echo.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/06 18:38:48 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/09/05 17:05:41 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/builtins.h"
 
 int	check_for_doubles(char *args)
@@ -33,18 +21,18 @@ void	ft_echo(t_cmd *cmd, pid_t pid)
 	int	i;
 
 	i = 1;
-	while ((cmd->args[i] && (!check_for_doubles(cmd->args[i]))))
+	while ((cmd->full_cmd[i] && (!check_for_doubles(cmd->full_cmd[i]))))
 		i++;
-	while (cmd->args[i])
+	while (cmd->full_cmd[i])
 	{
-		if (!cmd->args[i])
+		if (!cmd->full_cmd[i])
 			break ;
-		ft_putstr_fd(cmd->args[i], 1);
-		if (cmd->args[i + 1])
+		ft_putstr_fd(cmd->full_cmd[i], 1);
+		if (cmd->full_cmd[i + 1])
 			ft_putstr_fd(" ", 1);
 		i++;
 	}
-	if (cmd->args[1] && !check_for_doubles(cmd->args[1]))
+	if (cmd->full_cmd[1] && !check_for_doubles(cmd->full_cmd[1]))
 	{
 		check_for_child(pid, 0);
 		return ;

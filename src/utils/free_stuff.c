@@ -59,8 +59,8 @@ void	free_cmd(t_cmd *cmd)
 {
 	if (!cmd)
 		return ;
-	if (cmd->args)
-		free_char_array(cmd->args);
+	if (cmd->full_cmd)
+		free_char_array(cmd->full_cmd);
 	if (cmd->redirections)
 		free_redirections(cmd->redirections);
 	ft_free(cmd);

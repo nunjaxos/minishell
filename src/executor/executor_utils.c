@@ -1,53 +1,39 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   executor_utils.c                                   :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/05 15:49:44 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/08/20 17:58:48 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/executor.h"
 
-int	check_builtins(t_parser *parser, t_cmd *cmd, pid_t pid)
+int check_builtins(t_data *data, t_cmd *cmd, pid_t pid)
 {
-	t_cmd	*tmp;
+	if (!cmd->full_cmd || !cmd->full_cmd[0])
+		return (0);
 
-	tmp = cmd;
-	if (!ft_strcmp(tmp->args[0], "echo"))
-		return (ft_echo(tmp, pid), 1);
-	else if (!ft_strcmp(tmp->args[0], "env"))
-	{
-		if (tmp->count == 1)
-			return (ft_env(parser->env, pid), 1);
-		else if (tmp->count > 1)
-			ft_putendl_fd("env: too many arguments", 2);
-	}
-	else if (!ft_strcmp(tmp->args[0], "exit"))
-		return (ft_exit(tmp, pid), 1);
-	else if (!ft_strcmp(cmd->args[0], "unset"))
+	if (!ft_strcmp(cmd->full_cmd[0], "echo"))
+		return (ft_echo(cmd, pid), 1);
+	else if (!ft_strcmp(cmd->full_cmd[0], "env"))
+		return (ft_env(data->n_env, pid), 1);
+	else if (!ft_strcmp(cmd->full_cmd[0], "exit"))
+		return (ft_exit(cmd, pid), 1);
+	else if (!ft_strcmp(cmd->full_cmd[0], "unset"))
 		return (ft_unset(cmd, pid), 1);
-	else if (!ft_strcmp(cmd->args[0], "cd"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "cd"))
 		return (ft_cd(cmd, pid), 1);
-	else if (!ft_strcmp(cmd->args[0], "pwd"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "pwd"))
 		return (ft_pwd(pid), 1);
-	else if (!ft_strcmp(cmd->args[0], "export"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "export"))
 		return (ft_export(cmd), 1);
 	return (0);
 }
 
-int	before_child(t_cmd *cmd)
+
+int before_child(t_cmd *cmd)
 {
-	if (!ft_strcmp(cmd->args[0], "exit"))
+	if (!cmd->full_cmd || !cmd->full_cmd[0])
+		return (0);
+	if (!ft_strcmp(cmd->full_cmd[0], "exit"))
 		return (ft_exit(cmd, 1), 1);
-	else if (!ft_strcmp(cmd->args[0], "unset"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "unset"))
 		return (ft_unset(cmd, 1), 1);
-	else if (!ft_strcmp(cmd->args[0], "cd"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "cd"))
 		return (ft_cd(cmd, 1), 1);
-	else if (!ft_strcmp(cmd->args[0], "export"))
+	else if (!ft_strcmp(cmd->full_cmd[0], "export"))
 		return (ft_export(cmd), 1);
 	return (0);
 }

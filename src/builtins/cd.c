@@ -1,35 +1,23 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   cd.c                                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/22 20:47:21 by amouhand          #+#    #+#             */
-/*   Updated: 2024/09/02 19:03:01 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/builtins.h"
 
-char	*cd_error(t_cmd *cmd, pid_t pid)
+char	*cd_error(t_cmd *cmd, pid_t pid, t_data *data)
 {
 	char	*error;
 
 	error = NULL;
-	if (cmd->count > 2)
+	if (ft_strslen(cmd->full_cmd) > 2)
 	{
 		ft_putstr_fd("cd: Error: too many arguments\n", 2);
 		check_for_child(pid, 1);
 		return (NULL);
 	}
-	else if (!ft_strcmp(cmd->args[1], "-"))
+	else if (!ft_strcmp(cmd->full_cmd[1], "-"))
 	{
-		error = get_value("OLDPWD", get_parser()->env);
+		error = get_value("OLDPWD", data->n_env);
 		if (!error)
 		{
 			ft_putstr_fd("cd: Error: OLDPWD not set\n", 2);
-			get_parser()->exit_status = 1;
+			data->exit_status = 1;
 			return (NULL);
 		}
 		ft_putendl_fd(error, 1);
@@ -37,24 +25,24 @@ char	*cd_error(t_cmd *cmd, pid_t pid)
 	return (error);
 }
 
-void	change_dir_norm(char *old_pwd)
+void	change_dir_norm(char *old_pwd, t_data *data)
 {
-	if (get_value("OLDPWD", get_parser()->env))
+	if (get_value("OLDPWD", data->n_env))
 	{
-		ft_free(get_value("OLDPWD", get_parser()->env));
-		edit_env(get_parser()->env, "OLDPWD", old_pwd);
-		update_pwd(get_parser()->env);
+		ft_free(get_value("OLDPWD", data->n_env));
+		edit_env(data->n_env, "OLDPWD", old_pwd);
+		update_pwd(data->n_env);
 	}
-	else if (!get_value("OLDPWD", get_parser()->env))
+	else if (!get_value("OLDPWD", data->n_env))
 	{
-		edit_env(get_parser()->env, "OLDPWD", old_pwd);
-		update_pwd(get_parser()->env);
+		edit_env(data->n_env, "OLDPWD", old_pwd);
+		update_pwd(data->n_env);
 	}
 	else
 		ft_free(old_pwd);
 }
 
-int	change_dir(char *path, pid_t pid)
+int	change_dir(char *path, pid_t pid, t_data *data)
 {
 	char	*old_pwd;
 
@@ -70,14 +58,14 @@ int	change_dir(char *path, pid_t pid)
 			ft_free(path);
 			return (1);
 		}
-		change_dir_norm(old_pwd);
+		change_dir_norm(old_pwd, data);
 	}
 	else
 		ft_free(old_pwd);
 	return (0);
 }
 
-int	ft_cd(t_cmd *cmd, pid_t pid)
+int	ft_cd(t_cmd *cmd, pid_t pid, t_data *data)
 {
 	char	*path_no_free;
 	char	*path;
@@ -85,21 +73,21 @@ int	ft_cd(t_cmd *cmd, pid_t pid)
 	path_no_free = get_valid_path(cmd, pid);
 	if (!path_no_free)
 	{
-		if (!ft_strcmp(cmd->args[1], "-") || !ft_strcmp(cmd->args[1], "~"))
+		if (!ft_strcmp(cmd->full_cmd[1], "-") || !ft_strcmp(cmd->full_cmd[1], "~"))
 			return (0);
-		path = ft_strdup(cmd->args[1]);
+		path = ft_strdup(cmd->full_cmd[1]);
 	}
 	if (path_no_free)
 	{
-		if (change_dir(path_no_free, pid))
+		if (change_dir(path_no_free, pid, data))
 			return (1);
 	}
 	else if (path)
 	{
-		if (change_dir(path, pid))
+		if (change_dir(path, pid, data))
 			return (1);
 		ft_free(path);
 	}
-	env_update(get_parser()->env);
+	env_update(data->n_env);
 	return (0);
 }

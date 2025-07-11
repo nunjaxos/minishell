@@ -3,107 +3,127 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/22 20:41:11 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/22 01:18:44 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/21 10:56:48 by handler           #+#    #+#             */
+/*   Updated: 2023/05/08 11:28:29 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "get_next_line.h"
 
-char	*reading_fd(int fd, char *remainder)
+int	how_many(t_list_gnl *list, char **line)
 {
-	int		n;
-	char	*buffer;
+	t_list_gnl	*tmp;
+	int			len;
+	int			i;
 
-	buffer = ft_malloc((BUFFER_SIZE + 1) * sizeof(char));
-	if (!buffer)
-		return (NULL);
-	n = 1;
-	while (!ft_strchr_gnl(remainder, '\n') && n != 0)
+	tmp = list;
+	len = 0;
+	while (tmp->next != list)
 	{
-		n = read(fd, buffer, BUFFER_SIZE);
-		if (n == -1)
+		len += ft_strlen(tmp->content);
+		tmp = tmp -> next;
+	}
+	i = -1;
+	while (tmp->content[++i])
+	{
+		if (tmp->content[i] == '\n')
 		{
-			ft_free(buffer);
-			ft_free(remainder);
-			return (NULL);
+			++len;
+			break ;
 		}
-		buffer[n] = '\0';
-		remainder = ft_strjoin_gnl(remainder, buffer);
+		++len;
 	}
-	ft_free(buffer);
-	return (remainder);
+	*line = malloc(sizeof(char *) * (len + 1));
+	return (len);
 }
 
-char	*fill(char *to_cut)
+int	make_line(t_list_gnl *list, char **line)
 {
-	int		i;
-	char	*str;
+	int	i;
+	int	j;
+	int	len;
 
-	i = 0;
-	if (!to_cut[i])
-		return (NULL);
-	while (to_cut[i] && to_cut[i] != '\n')
-		i++;
-	str = ft_malloc(sizeof(char) * (i + 2));
-	if (!str)
-		return (NULL);
-	i = 0;
-	while (to_cut[i] && to_cut[i] != '\n')
-	{
-		str[i] = to_cut[i];
-		i++;
-	}
-	if (to_cut[i] == '\n')
-	{
-		str[i] = to_cut[i];
-		i++;
-	}
-	str[i] = '\0';
-	return (str);
-}
-
-char	*update(char *remainder)
-{
-	char	*str;
-	int		i;
-	int		j;
-
-	i = 0;
+	len = how_many(list, line);
+	if (!line)
+		return (free_list_gnl(&list));
 	j = 0;
-	while (remainder[i] && remainder[i] != '\n')
-		i++;
-	if (!remainder[i])
+	while (j < len)
 	{
-		ft_free(remainder);
-		return (NULL);
+		i = -1;
+		while (list -> content[++i])
+		{
+			if (list -> content[i] == '\n')
+			{
+				(*line)[j++] = list -> content[i];
+				break ;
+			}
+			(*line)[j++] = list -> content[i];
+		}
+		list = list -> next;
 	}
-	str = ft_malloc((sizeof(char)) * (ft_strlen(remainder) - i + 1));
-	if (!str)
-		return (NULL);
-	i++;
-	while (remainder[i])
-	{
-		str[j++] = remainder[i++];
-	}
-	str[j] = '\0';
-	ft_free(remainder);
-	return (str);
+	(*line)[j] = '\0';
+	return (1);
+}
+
+int	new_line(t_list_gnl *list)
+{
+	int			i;
+	t_list_gnl	*current;
+
+	if (!list)
+		return (0);
+	current = list->prev;
+	i = -1;
+	while (current -> content[++i])
+		if (current -> content[i] == '\n')
+			return (1);
+	return (0);
 }
 
 char	*get_next_line(int fd)
 {
-	static char	*remainder[1024];
-	char		*ret;
+	static t_list_gnl	*list = NULL;
+	char				*line;
 
-	if (fd < 0 && BUFFER_SIZE <= 0)
+	line = NULL;
+	if (fd < 0 && list)
+		free_list_gnl(&list);
+	if (fd < 0 || BUFFER_SIZE < 0)
 		return (NULL);
-	remainder[fd] = reading_fd(fd, remainder[fd]);
-	if (!remainder[fd])
+	if (!write_in_list_gnl(fd, &list) || !list)
 		return (NULL);
-	ret = fill(remainder[fd]);
-	remainder[fd] = update(remainder[fd]);
-	return (ret);
+	if (!make_line(list, &line) || !clear_list_gnl(&list))
+		return (NULL);
+	if (line[0] == '\0')
+	{
+		free(line);
+		free_list_gnl(&list);
+		return (NULL);
+	}
+	return (line);
 }
+
+// #include <fcntl.h>
+
+// int main(void)
+// {
+// 	char	*str;
+// 	int		fd;
+
+// 	fd = open("big_line_with_nl", O_RDONLY);
+// 	while (1)
+// 	{
+// 		str = get_next_line(fd);
+// 		if (!str)
+// 			break;
+// 		printf("%s", str);
+// 		free(str);
+// 	}
+// 	// str = get_next_line(fd);
+// 	// printf("%d\n", ft_strlen(str));
+// 	// free(str);
+// 	close(fd);
+// 	return (0);
+// }

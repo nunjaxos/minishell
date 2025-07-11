@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   export.c                                           :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/08 19:44:36 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/09/02 19:08:35 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/expander.h"
 
-int	export_error_display(t_cmd *cmd, char *key, char *value, int *i)
+int	export_error_display(t_cmd *cmd, char *key, char *value, int *i, t_data *data)
 {
 	char	*tmp;
 
@@ -22,26 +10,26 @@ int	export_error_display(t_cmd *cmd, char *key, char *value, int *i)
 		export_not_valid(tmp, i, value, key);
 		return (1);
 	}
-	if (str_index(cmd->args[*i], '=')
-		&& cmd->args[*i][str_index(cmd->args[*i], '=') - 1] == '+'
-		&& env_key_exists(get_parser()->env, key))
-		edit_env(get_parser()->env, key,
-			ft_strjoin_free(get_value(key, get_parser()->env), value, 1));
-	else if (str_index(cmd->args[*i], '=')
-		&& cmd->args[*i][str_index(cmd->args[*i], '=') - 1] == '+')
-		add_env(&get_parser()->env, ft_strdup(key), ft_strdup(value));
-	else if (env_key_exists(get_parser()->env, key))
-		edit_env(get_parser()->env, key, ft_strdup(value));
+	if (str_index(cmd->full_cmd[*i], '=')
+		&& cmd->full_cmd[*i][str_index(cmd->full_cmd[*i], '=') - 1] == '+'
+		&& env_key_exists(data->n_env, key))
+		edit_env(data->n_env, key,
+			ft_strjoin_free(get_value(key, data->n_env), value, 1));
+	else if (str_index(cmd->full_cmd[*i], '=')
+		&& cmd->full_cmd[*i][str_index(cmd->full_cmd[*i], '=') - 1] == '+')
+		add_env(&data->n_env, ft_strdup(key), ft_strdup(value));
+	else if (env_key_exists(data->n_env, key))
+		edit_env(data->n_env, key, ft_strdup(value));
 	else
-		add_env(&get_parser()->env, ft_strdup(key), ft_strdup(value));
+		add_env(&data->n_env, ft_strdup(key), ft_strdup(value));
 	return (0);
 }
 
-int	export_null(int *i, t_cmd *cmd)
+int	export_null(int *i, t_cmd *cmd, t_data *data)
 {
 	char	*key;
 
-	key = ft_strdup(cmd->args[*i]);
+	key = ft_strdup(cmd->full_cmd[*i]);
 	if (!check_valid_key(key))
 	{
 		ft_putstr_fd("minishell: export: `", 2);
@@ -52,52 +40,52 @@ int	export_null(int *i, t_cmd *cmd)
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		*i += 1;
 		ft_free(key);
-		get_parser()->exit_status = 1;
+		data->exit_status = 1;
 		return (1);
 	}
-	if (env_key_exists(get_parser()->env, key))
+	if (env_key_exists(data->n_env, key))
 	{
-		if (!get_value(key, get_parser()->env))
-			edit_env(get_parser()->env, ft_strdup(key), NULL);
+		if (!get_value(key, data->n_env))
+			edit_env(data->n_env, ft_strdup(key), NULL);
 	}
 	else
-		add_env(&get_parser()->env, ft_strdup(key), NULL);
+		add_env(&data->n_env, ft_strdup(key), NULL);
 	return (0);
 }
 
-void	export_args_handle(t_cmd *cmd, char *key, char *value)
+void	export_args_handle(t_cmd *cmd, char *key, char *value, t_data *data)
 {
 	int	i;
 
 	i = 1;
-	while (cmd->args[i])
+	while (cmd->full_cmd[i])
 	{
-		if (ft_strchr(cmd->args[i], '='))
+		if (ft_strchr(cmd->full_cmd[i], '='))
 		{
-			value = ft_strchr(cmd->args[i], '=') + 1;
-			key = ft_substr(cmd->args[i], 0, key_len(cmd->args[i]));
-			if (export_error_display(cmd, key, value, &i))
+			value = ft_strchr(cmd->full_cmd[i], '=') + 1;
+			key = ft_substr(cmd->full_cmd[i], 0, key_len(cmd->full_cmd[i]));
+			if (export_error_display(cmd, key, value, &i, data))
 				continue ;
 		}
-		else if (export_null(&i, cmd))
+		else if (export_null(&i, cmd, data))
 			continue ;
 		i++;
 		ft_free(key);
 	}
-	check_for_child(cmd->pid, get_parser()->exit_status);
+	check_for_child(cmd->pid, data->exit_status);
 }
 
-int	ft_export(t_cmd *cmd)
+int	ft_export(t_cmd *cmd, t_data *data)
 {
 	char	*key;
 	char	*value;
 
 	key = NULL;
 	value = NULL;
-	if (cmd->count == 1)
-		print_export_list(get_parser()->env);
+	if (ft_strslen(cmd->full_cmd) == 1)
+		print_export_list(data->n_env);
 	else
-		export_args_handle(cmd, key, value);
+		export_args_handle(cmd, key, value, data);
 	return (1);
 }
 
@@ -114,7 +102,7 @@ void	print_export_list(t_env *env)
 	while (tmp)
 	{
 		ft_putstr_fd("declare -x ", 1);
-		ft_putstr_fd(tmp->key, 1);
+		ft_putstr_fd(tmp->name, 1);
 		if (tmp->value)
 		{
 			ft_putstr_fd("=\"", 1);

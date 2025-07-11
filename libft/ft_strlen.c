@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strlen.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/31 13:35:03 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/16 03:06:31 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/07 17:28:18 by handler           #+#    #+#             */
+/*   Updated: 2022/11/09 14:02:00 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,17 @@
 
 size_t	ft_strlen(const char *s)
 {
-	size_t	i;
+	unsigned int	i;
 
-	if (!s)
-		return (0);
 	i = 0;
-	while (s[i])
-		i++;
+	while (s && s[i])
+		++i;
 	return (i);
 }
+
+// #include <stdio.h>
+// 
+// void main()
+// {
+	// printf("%ld\n", ft_strlen("un truc un peu long puet etre"));
+// }

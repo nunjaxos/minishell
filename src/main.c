@@ -1,42 +1,30 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   main.c                                             :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/16 23:10:20 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/30 14:58:29 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../include/minishell.h"
+#include "include/minishell.h"
 
 int	g_sigchild;
 
 int	main(int ac, char **av, char **env)
 {
-	t_parser	*parser;
+	char	*input;
+	int		last_exit_code = 0;
 
-	g_sigchild = 0;
+	(void)ac;
+	(void)av;
 	signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
-	if (ac != 1 || av[1])
+
+	init_env_list(env); // initializes environment into your global/env storage
+
+	while (1)
 	{
-		write(2, "Error: No Args Needed\n", 23);
-		exit(1);
+		input = readline("minishell$ ");
+		if (!input)
+		{
+			printf("exit\n");
+			break;
+		}
+		if (process_input(input, &last_exit_code))
+			add_history(input);
+		free(input);
 	}
-	parser = readfrom(env);
-	if (!parser)
-		exit(1);
 	return (0);
-}
-
-t_parser	*get_parser(void)
-{
-	static t_parser	*parser = NULL;
-
-	if (!parser)
-		parser = malloc(sizeof(t_parser));
-	return (parser);
 }

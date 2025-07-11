@@ -3,54 +3,33 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strjoin.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/02 14:23:41 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/19 02:22:12 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/09 22:45:22 by handler           #+#    #+#             */
+/*   Updated: 2022/11/14 16:03:56 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-static char	*ft_joined(char *joined, const char *s1, const char *s2)
-{
-	size_t	i;
-	size_t	j;
-
-	i = 0;
-	j = 0;
-	while (s1[i] || s2[j])
-	{
-		if (s1[i])
-		{
-			joined[i] = s1[i];
-			i++;
-		}
-		else if (s2[j])
-		{
-			joined[i + j] = s2[j];
-			j++;
-		}
-	}
-	joined[i + j] = '\0';
-	return (0);
-}
-
 char	*ft_strjoin(char const *s1, char const *s2)
 {
-	size_t		total_len;
-	char		*joined;
+	int		i;
+	int		j;
+	char	*str;
 
-	if (!s1 && s2)
-		return (ft_strdup(s2));
-	else if (!s2 && s1)
-		return (ft_strdup(s1));
-	else if (!s1 && !s2)
-		return (ft_strdup(""));
-	total_len = ft_strlen(s1) + ft_strlen(s2);
-	joined = (char *)ft_calloc((total_len + 1), sizeof(char));
-	if (!joined)
+	if (!s1 || !s2)
 		return (NULL);
-	ft_joined(joined, s1, s2);
-	return (joined);
+	str = malloc(sizeof(char) * (ft_strlen(s1) + ft_strlen(s2) + 1));
+	if (!str)
+		return (NULL);
+	i = -1;
+	j = -1;
+	while (s1[++j])
+		str[++i] = s1[j];
+	j = -1;
+	while (s2[++j])
+		str[++i] = s2[j];
+	str[i + 1] = '\0';
+	return (str);
 }

@@ -3,29 +3,32 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strchr.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/01 13:58:23 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/19 02:20:22 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/08 09:57:37 by handler           #+#    #+#             */
+/*   Updated: 2022/11/09 13:54:42 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strchr(const char *s, int c)
+char	*ft_strchr(const char *string, int searchedChar)
 {
 	int	i;
-	int	j;
 
-	i = 0;
-	j = ft_strlen(s);
-	if (c == 0)
-		return ((char *)(s + j));
-	while (i <= j)
-	{
-		if (s[i] == (char)c)
-			return ((char *)(s + i));
-		i++;
-	}
+	i = -1;
+	while (string[++i])
+		if (string[i] == (unsigned char)searchedChar)
+			return ((char *)&string[i]);
+	if (string[i] == (unsigned char)searchedChar)
+		return ((char *)&string[i]);
 	return (NULL);
 }
+
+// void main()
+// {
+// 	printf("%s\n", strchr("je cherche une lettre", 'e'));
+// 	printf("%s\n", ft_strchr("je cherche une lettre", 'e'));
+// 	char *f = NULL;
+// 	printf("%d\n", (f || NULL));
+// }

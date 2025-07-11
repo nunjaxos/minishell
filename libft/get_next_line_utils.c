@@ -3,105 +3,120 @@
 /*                                                        :::      ::::::::   */
 /*   get_next_line_utils.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/12/22 20:37:49 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/22 01:18:28 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/23 11:30:53 by handler           #+#    #+#             */
+/*   Updated: 2023/05/08 11:28:06 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "libft.h"
+#include "get_next_line.h"
 
-size_t	ft_strlen_gnl(const char *s)
+static int	list_new_elem_str(t_list_gnl **new, char *elem)
 {
-	size_t	i;
-
-	i = 0;
-	while (s[i])
-	{
-		i++;
-	}
-	return (i);
+	(*new) = malloc(sizeof(t_list_gnl));
+	if (*new == NULL)
+		return (0);
+	(*new)->content = elem;
+	(*new)->next = NULL;
+	(*new)->prev = NULL;
+	return (1);
 }
 
-static char	*ft_strdup_gnl(char *s)
+int	add_to_list_gnl(t_list_gnl **list, char *buf)
 {
-	size_t	i;
-	size_t	len;
-	char	*string;
+	t_list_gnl	*new;
 
-	len = ft_strlen_gnl(s);
-	i = 0;
-	string = (char *)ft_malloc(sizeof(char) * (len + 1));
-	if (!string)
-		return (NULL);
-	while (s[i])
+	if (!list_new_elem_str(&new, buf))
+		return (0);
+	if (!(*list))
 	{
-		string[i] = s[i];
-		i++;
+		(*list) = new;
+		(*list)->prev = *list;
+		(*list)->next = *list;
 	}
-	string[i] = '\0';
-	return (string);
+	else
+	{
+		new->prev = (*list)->prev;
+		new->next = (*list);
+		(*list)->prev->next = new;
+		(*list)->prev = new;
+	}
+	return (1);
 }
 
-static char	*ft_joined(char *joined, const char *s1, const char *s2)
+int	free_list_gnl(t_list_gnl **list)
 {
-	size_t	i;
-	size_t	j;
+	t_list_gnl	*tmp;
+	t_list_gnl	*current;
 
-	i = 0;
-	j = 0;
-	while (s1[i] || s2[j])
+	current = *list;
+	if (!*list)
+		return (0);
+	while (current->next != *list)
 	{
-		if (s1[i])
-		{
-			joined[i] = s1[i];
-			i++;
-		}
-		else if (s2[j])
-		{
-			joined[i + j] = s2[j];
-			j++;
-		}
+		tmp = current;
+		current = current->next;
+		free(tmp->content);
+		free(tmp);
 	}
-	joined[i + j] = '\0';
-	return (joined);
-}
-
-char	*ft_strjoin_gnl(char *s1, char *s2)
-{
-	size_t	total_len;
-	char	*joined;
-
-	if (!s1 && !s2)
-		return (NULL);
-	else if (s1 && !s2)
-		return (ft_strdup_gnl(s1));
-	else if (!s1 && s2)
-		return (ft_strdup_gnl(s2));
-	total_len = ft_strlen_gnl(s1) + ft_strlen_gnl(s2);
-	joined = (char *)ft_malloc(total_len * sizeof(char) + 1);
-	if (!joined)
-		return (NULL);
-	joined = ft_joined(joined, s1, s2);
-	ft_free(s1);
-	return (joined);
-}
-
-char	*ft_strchr_gnl(const char *s, int c)
-{
-	unsigned int	i;
-
-	i = 0;
-	if (!s)
-		return (NULL);
-	if (c == '\0')
-		return ((char *)&s[ft_strlen_gnl(s)]);
-	while (s[i])
-	{
-		if (s[i] == (char)c)
-			return ((char *)&s[i]);
-		i++;
-	}
+	free(current->content);
+	free(current);
+	*list = NULL;
 	return (0);
+}
+
+int	write_in_list_gnl(int fd, t_list_gnl **list)
+{
+	char	*buf;
+	int		r_res;
+
+	r_res = 1;
+	while (!new_line(*list) && r_res != 0)
+	{
+		buf = malloc(sizeof(char) * (BUFFER_SIZE + 1));
+		if (!buf)
+			return (free_list_gnl(list));
+		r_res = read(fd, buf, BUFFER_SIZE);
+		if (r_res <= 0 && !(*list))
+		{
+			free(buf);
+			return (free_list_gnl(list));
+		}
+		buf[r_res] = '\0';
+		if (!add_to_list_gnl(list, buf))
+		{
+			free(buf);
+			return (free_list_gnl(list));
+		}
+	}
+	return (1);
+}
+
+int	clear_list_gnl(t_list_gnl **list)
+{
+	t_list_gnl	*last;
+	char		*content;
+	int			i;
+	int			j;
+
+	if (!list)
+		return (0);
+	last = (*list)->prev;
+	i = 0;
+	while (last -> content[i] != '\n' && last -> content[i])
+		i++;
+	if (last -> content[i] == '\n' && last -> content[i])
+		i++;
+	j = ft_strlen(last -> content);
+	content = malloc(sizeof(char) * ((j - i) + 1));
+	if (!content)
+		return (free_list_gnl(list));
+	j = 0;
+	while (last -> content[i])
+		content[j++] = last -> content[i++];
+	content[j] = '\0';
+	free_list_gnl(list);
+	add_to_list_gnl(list, content);
+	return (1);
 }

@@ -3,26 +3,52 @@
 /*                                                        :::      ::::::::   */
 /*   ft_memset.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/10/30 20:59:45 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/01 21:23:43 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/08 10:36:44 by handler           #+#    #+#             */
+/*   Updated: 2022/11/09 13:54:42 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-void	*ft_memset(void *s, int c, size_t n)
+void	*ft_memset(void *pointer, int value, size_t count)
 {
-	size_t			i;
 	unsigned char	*str;
 
-	str = (unsigned char *)s ;
-	i = 0 ;
-	while (n > i)
+	str = pointer;
+	while (count--)
 	{
-		str[i] = (unsigned char)c ;
-		i++ ;
+		*str = (unsigned char) value;
+		str++;
 	}
-	return (s);
+	return (pointer);
 }
+
+// #include <stdio.h>
+// #include "libft.h"
+// #include <string.h>
+
+// int main() {
+
+//     int array [] = { 54, 85, 20, 63, 21 };
+//     size_t size = sizeof( int ) * 5;
+//     int length;
+
+//     /* Display the initial values */
+//     for( length=0; length<5; length++) {
+//         printf( "%d ", array[ length ] );
+//     }
+//     printf( "\n" );
+
+//     /* Reset the memory bloc */
+//     ft_memset( array, 'q', size );
+
+//     /* Display the new values */
+//     for( length=0; length<5; length++) {
+//         printf( "%d ", array[ length ] );
+//     }
+//     printf( "\n" );
+
+//     return 0;
+// }

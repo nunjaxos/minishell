@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   signals.h                                          :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/24 15:28:16 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/30 19:48:49 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef SIGNALS_H
 # define SIGNALS_H
 
@@ -25,7 +13,7 @@ typedef struct s_alloc			t_alloc;
 typedef enum s_type				t_type;
 typedef enum perms				t_perms;
 
-void							sigint_handler(int signo);
-void							sigquit_handler(int signo);
+void							sigint_handler(int signo, t_data *data);
+void							sigquit_handler(int signo, t_data *s_data);
 
 #endif

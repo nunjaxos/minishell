@@ -12,6 +12,16 @@
 
 #include "../../include/minishell.h"
 
+int	ft_strslen(char **strs)
+{
+	int i = 0;
+	if (!strs)
+		return (0);
+	while (strs[i])
+		i++;
+	return (i);
+}
+
 int	overflow_check(size_t test, int digit)
 {
 	if (test > LLONG_MAX / 10 || (test == LLONG_MAX / 10

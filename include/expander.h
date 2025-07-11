@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   expander.h                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/18 11:56:00 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/30 19:54:30 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef EXPANDER_H
 # define EXPANDER_H
 
@@ -26,58 +14,20 @@ typedef struct s_alloc			t_alloc;
 typedef enum s_type				t_type;
 typedef enum perms				t_perms;
 
-int								expander(t_cmd **cmds);
-char							*expand_env(char *arg, int flag);
-char							*joining(char *to_free, char *before,
-									char *expand, char *after);
-char							*get_before(char *arg);
-char							*get_expand(char *expand, int flag);
-char							*get_value(char *key, t_env *env);
-char							*get_after(char *arg);
-char							*handle_key_conditions(char *key, int flag,
-									char *expand);
-char							*extract_key(char *expand);
-void							process_characters(char *arg, int *i,
-									int *check, int *tmp);
-char							*remove_quotes(char *arg, int *flag);
-int								count_chars_without_quotes(char *arg,
-									int *flag);
-void							copy_chars_without_quotes(char *result,
-									char *arg, int *flag);
-void							init_vars(int *i, int *j, int *tmp);
-void							increment_vars(int *i, int *j, int *k, int *l);
-void							set_check(char *arg, int *i, int *flag);
-void							set_and_increment(int *i, int *flag);
-char							**expand_space(t_cmd *cmd, int *j,
-									char **expanded);
-int								space_available(char *arg);
-void							ambiguos_redirect(char *arg);
-char							**further_split(char *s, char *charset);
-char							**replace_null(char **arr, int index);
-void							add_to_expand(void);
-void							expand_list_process(char *before, int flag,
-									int expand);
-void							add_content_to_expand(char *content);
-void							add_should_split_to_expand(bool should_split);
-void							add_in_single_quotes_to_expand(
-									bool in_single_quotes);
-void							add_in_double_quotes_to_expand(
-									bool in_double_quotes);
-void							free_expand_list(void);
-char							**joining_expand_list(t_cmd *cmd);
-int								calculate_result_size(t_expand *expand);
-void							fill_result_array(char **result,
-									t_expand *expand);
-void							assignment_split_check(char **argument,
-									t_expand *expand);
-int								expand_redirections(t_redirection *re);
-void							expand_command(t_cmd *cmd);
-char							*process_before(char *arg, int *flag);
-char							*process_expand_and_after(char *arg,
-									char *before, int flag);
-void							update_split_flag(t_expand *expand,
-									t_expand *prev, int flag);
-int								find_split_flag(t_expand *expand,
-									t_expand *prev);
+void						handle_word_token(t_elem *curr, int exit_code);
+void						expand_tokens(t_elem *token, int exit_code);
+void						handle_quoted_token(t_elem *curr, int exit_code);
+char						*get_env_value(char *name);
+char						*extract_var_name(char *str, int start, int *end);
+char						*expand_exit_status(int exit_code);
+char						*remove_quotes(char *content, enum e_type quote_type);
+char						*expand_token_content(char *content, int exit_code, int should_expand);
+char						*realloc_result(char *result, int *max_size, int needed);
+int							is_valid_var_char(char c);
+int							copy_var_value(char **res, int *len, int *max, char *val);
+int							process_regular_char(char *content, int *i, t_expand_data *data);
+int							process_expansion_loop(char *content, t_expand_data *data);
+int							process_dollar_expansion(char *content, int *i, t_expand_data *data);
+int							handle_special_var(char *name, int exit_code, char **value);
 
 #endif

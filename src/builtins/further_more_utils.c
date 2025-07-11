@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   further_more_utils.c                               :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/09/01 16:39:53 by amouhand          #+#    #+#             */
-/*   Updated: 2024/09/02 19:10:44 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/executor.h"
 
 char	**convert_path_to_array(t_env *env)
@@ -40,18 +28,18 @@ void	redic_error(t_redirection *redirection)
 		ft_putstr_fd(": No such file or directory\n", 2);
 }
 
-char	*get_valid_path(t_cmd *cmd, pid_t pid)
+char	*get_valid_path(t_cmd *cmd, pid_t pid, t_data *data)
 {
 	char	*path;
 
-	path = cd_error(cmd, pid);
-	if (!ft_strcmp(cmd->args[1], "~") || cmd->count == 1)
+	path = cd_error(cmd, pid, data);
+	if (!ft_strcmp(cmd->full_cmd[1], "~") || ft_strslen(cmd->full_cmd) == 1)
 	{
-		path = get_value("HOME", get_parser()->env);
+		path = get_value("HOME", data->n_env);
 		if (!path)
 		{
 			ft_putstr_fd("cd: Error: HOME not set\n", 2);
-			get_parser()->exit_status = 1;
+			data->exit_status = 1;
 			check_for_child(pid, 1);
 			return (NULL);
 		}

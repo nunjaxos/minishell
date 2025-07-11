@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtins.h                                         :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/03 18:06:28 by amouhand          #+#    #+#             */
-/*   Updated: 2024/09/05 17:06:54 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef BUILTINS_H
 # define BUILTINS_H
 
@@ -28,29 +16,29 @@ typedef enum perms				t_perms;
 void							ft_echo(t_cmd *cmd, pid_t pid);
 void							ft_env(t_env *env, pid_t pid);
 void							ft_pwd(pid_t pid);
-void							ft_unset(t_cmd *cmd, pid_t pid);
-int								ft_exit(t_cmd *cmd, pid_t pid);
-int								ft_cd(t_cmd *cmd, pid_t pid);
-int								ft_export(t_cmd *cmd);
+void							ft_unset(t_cmd *cmd, pid_t pid, t_data *data);
+int								ft_exit(t_cmd *cmd, pid_t pid, t_data *data);
+int								ft_cd(t_cmd *cmd, pid_t pid, t_data *data);
+int								ft_export(t_cmd *cmd, t_data *data);
 
 void							add_env(t_env **head, char *key, char *value);
 void							print_export_list(t_env *env);
 void							sort_env_list(t_env *env);
-int								env_key_exists(t_env *env, char *key);
-int								check_valid_key(char *key);
+int								env_name_exists(t_env *env, char *name);
+int								check_valid_name(char *name);
 t_env							*copy_env_list(t_env *env);
 void							error_display(t_cmd *cmd);
 int								check_for_child(pid_t pid, int exit_stat);
-char							*cd_error(t_cmd *cmd, pid_t pid);
+char							*cd_error(t_cmd *cmd, pid_t pid, t_data *data);
 int								export_error_display(t_cmd *cmd, char *key,
-									char *value, int *i);
-int								export_null(int *i, t_cmd *cmd);
+									char *value, int *i, t_data *data);
+int								export_null(int *i, t_cmd *cmd, t_data *data);
 void							export_args_handle(t_cmd *cmd, char *key,
-									char *value);
+									char *value, t_data *data);
 void							exit_norm(t_cmd *cmd, int *exit_status,
-									pid_t pid);
-int								change_dir(char *path, pid_t pid);
-void							change_dir_norm(char *old_pwd);
+									pid_t pid , t_data *data);
+int								change_dir(char *path, pid_t pid, t_data *data);
+void							change_dir_norm(char *old_pwd, t_data *data);
 void							redic_error(t_redirection *redirection);
 void							export_not_valid(char *tmp, int *i,
 									char *value, char *key);

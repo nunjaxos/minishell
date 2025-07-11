@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   unset.c                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: ybouaoud <ybouaoud@student.42.fr>          +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/08 21:46:41 by ybouaoud          #+#    #+#             */
-/*   Updated: 2024/09/02 19:07:50 by ybouaoud         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/builtins.h"
 
 void	delete_env(t_env *env, char *key)
@@ -21,13 +9,13 @@ void	delete_env(t_env *env, char *key)
 	prev = NULL;
 	while (tmp)
 	{
-		if (!ft_strcmp(tmp->key, key))
+		if (!ft_strcmp(tmp->name, key))
 		{
 			if (prev)
 				prev->next = tmp->next;
 			else
 				env = tmp->next;
-			ft_free(tmp->key);
+			ft_free(tmp->name);
 			if (tmp->value)
 				ft_free(tmp->value);
 			ft_free(tmp);
@@ -38,15 +26,15 @@ void	delete_env(t_env *env, char *key)
 	}
 }
 
-void	ft_unset(t_cmd *cmd, pid_t pid)
+void	ft_unset(t_cmd *cmd, pid_t pid, t_data *data)
 {
 	int	i;
 
 	i = 1;
-	while (cmd->args[i])
+	while (cmd->full_cmd[i])
 	{
-		if (env_key_exists(get_parser()->env, cmd->args[i]))
-			delete_env(get_parser()->env, cmd->args[i]);
+		if (env_key_exists(data->n_env, cmd->full_cmd[i]))
+			delete_env(data->n_env, cmd->full_cmd[i]);
 		i++;
 	}
 	check_for_child(pid, 0);

@@ -37,20 +37,25 @@ void	check_shlvl(t_env *env)
 	edit_env(env, "SHLVL", ft_itoa(shlvl + 1));
 }
 
-void	update_last_cmd(t_parser *parser)
+void	update_last_cmd(t_data *data)
 {
-	int	count;
+	t_cmd	*cmd;
+	int		count;
 
-	count = count_char_array(parser->cmd[0]->args);
-	if (count_all_commands(parser->cmd) == 1
-		&& count)
-	{
-		edit_env(parser->env, "_",
-			ft_strdup(parser->cmd[0]->args[count - 1]));
-	}
+	cmd = data->head;
+	if (!cmd || !cmd->full_cmd)
+		return;
+	
+	count = 0;
+	while (cmd->full_cmd[count])
+		count++;
+
+	if (count > 0 && cmd->next == NULL) // single command
+		edit_env(data->n_env, "_", ft_strdup(cmd->full_cmd[count - 1]));
 	else
-		edit_env(parser->env, "_", NULL);
+		edit_env(data->n_env, "_", NULL);
 }
+
 
 void	env_update(t_env *env)
 {
@@ -64,13 +69,13 @@ t_env	*check_env(void)
 	t_env	*env;
 
 	env = (t_env *)ft_malloc(sizeof(t_env));
-	env->key = ft_strdup("PWD");
+	env->name = ft_strdup("PWD");
 	env->value = ft_strdup(getcwd(NULL, 0));
 	env->next = (t_env *)ft_malloc(sizeof(t_env));
-	env->next->key = ft_strdup("SHLVL");
+	env->next->name = ft_strdup("SHLVL");
 	env->next->value = ft_strdup("0");
 	env->next->next = (t_env *)ft_malloc(sizeof(t_env));
-	env->next->next->key = ft_strdup("_");
+	env->next->next->name = ft_strdup("_");
 	env->next->next->value = ft_strdup("");
 	return (env);
 }

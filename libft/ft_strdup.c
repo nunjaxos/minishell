@@ -3,33 +3,35 @@
 /*                                                        :::      ::::::::   */
 /*   ft_strdup.c                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/01 20:51:06 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/19 02:16:38 by amouhand         ###   ########.fr       */
+/*   Created: 2022/08/22 09:49:27 by handler           #+#    #+#             */
+/*   Updated: 2022/11/09 13:54:42 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "libft.h"
 
-char	*ft_strdup(const char *s)
+char	*ft_strdup(const char *src)
 {
-	size_t	i;
-	size_t	len;
-	char	*string;
+	char	*new;
+	int		i;
 
-	if (!s)
-		return (NULL);
-	len = ft_strlen(s);
 	i = 0;
-	string = (char *)ft_malloc(sizeof(char) *(len + 1));
-	if (!string)
-		return (NULL);
-	while (s[i])
-	{
-		string[i] = s[i];
+	while (src[i])
 		i++;
-	}
-	string[i] = '\0';
-	return (string);
+	new = malloc(sizeof(char) * (i + 1));
+	if (!new)
+		return (NULL);
+	i = -1;
+	while (src[++i])
+		new[i] = src[i];
+	new[i] = '\0';
+	return (new);
 }
+
+// int main(void)
+// {
+	// printf("%s\n", ft_strdup("une chaine de characteres."));
+	// return 0;
+// }

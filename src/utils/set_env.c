@@ -50,15 +50,15 @@ int	copy_env(char *env, t_env *new)
 	j = -1;
 	while (env[i] && env[i] != '=')
 		i++;
-	new->key = ft_malloc(sizeof(char) * (i + 1));
-	if (!new->key)
+	new->name = ft_malloc(sizeof(char) * (i + 1));
+	if (!new->name)
 		return (1);
 	new->value = ft_malloc(sizeof(char) * (ft_strlen(env) - i));
 	if (!new->value)
-		return (ft_free(new->key), 1);
+		return (ft_free(new->name), 1);
 	while (++j < i)
-		new->key[j] = env[j];
-	new->key[i++] = '\0';
+		new->name[j] = env[j];
+	new->name[i++] = '\0';
 	j = 0;
 	while (env[i])
 		new->value[j++] = env[i++];
@@ -75,10 +75,10 @@ void	free_env(t_env *head)
 	while (current)
 	{
 		next = current->next;
-		if (current->key)
+		if (current->name)
 		{
-			ft_free(current->key);
-			current->key = NULL;
+			ft_free(current->name);
+			current->name = NULL;
 		}
 		if (current->value)
 		{
@@ -95,7 +95,7 @@ void	free_env(t_env *head)
 	current = NULL;
 }
 
-void	add_env(t_env **head, char *key, char *value)
+void	add_env(t_env **head, char *name, char *value)
 {
 	t_env	*new;
 	t_env	*last;
@@ -106,7 +106,7 @@ void	add_env(t_env **head, char *key, char *value)
 		free_env(*head);
 		return ;
 	}
-	new->key = key;
+	new->name = name;
 	new->value = value;
 	new->next = NULL;
 	if (!*head)
@@ -120,14 +120,14 @@ void	add_env(t_env **head, char *key, char *value)
 	}
 }
 
-void	edit_env(t_env *head, char *key, char *new_value)
+void	edit_env(t_env *head, char *name, char *new_value)
 {
 	t_env	*current;
 
 	current = head;
 	while (current)
 	{
-		if (!ft_strcmp(current->key, key))
+		if (!ft_strcmp(current->name, name))
 		{
 			current->value = new_value;
 			return ;

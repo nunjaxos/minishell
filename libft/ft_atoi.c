@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   ft_atoi.c                                          :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <marvin@42.fr>                    +#+  +:+       +#+        */
+/*   By: handler <handler@student.42.fr>            +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2023/11/05 18:17:20 by amouhand          #+#    #+#             */
-/*   Updated: 2023/11/18 23:56:27 by amouhand         ###   ########.fr       */
+/*   Created: 2022/11/07 11:35:43 by handler           #+#    #+#             */
+/*   Updated: 2022/11/08 16:54:10 by handler          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,25 +14,28 @@
 
 int	ft_atoi(const char *nptr)
 {
-	int		sign;
-	int		outcome;
-	size_t	i;
+	int		nbr;
+	int		signe;
+	int		i;
+	char	*str;
 
 	i = 0;
-	outcome = 0;
-	sign = 1;
-	while (nptr[i] == 32 || (nptr[i] >= 9 && nptr[i] <= 13))
+	str = (char *)nptr;
+	while ((str[i] >= 9 && str[i] <= 13) || str[i] == 32)
 		i++;
-	if (nptr[i] == '+' || nptr[i] == '-')
-	{
-		if (nptr[i] == '-')
-			sign *= -1;
-		i++;
-	}
-	while (nptr[i] >= '0' && nptr[i] <= '9')
-	{
-		outcome = outcome * 10 + nptr[i] - '0';
-		i++;
-	}
-	return (outcome * sign);
+	signe = 1;
+	if (str[i] == '+' || str[i] == '-')
+		if (str[i++] == '-')
+			signe = -signe;
+	nbr = 0;
+	while (str[i] >= '0' && str[i] <= '9')
+		nbr = nbr * 10 + (str[i++] - 48);
+	return (nbr * signe);
 }
+
+// #include <stdio.h>
+// 
+// int main()
+// {
+	// printf("%d\n", ft_atoi("-2147483648"));
+// }

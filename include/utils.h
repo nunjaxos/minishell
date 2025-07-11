@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   utils.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/20 22:01:52 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/31 18:14:21 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef UTILS_H
 # define UTILS_H
 
@@ -61,5 +49,5 @@ void							heredoc_signals(void);
 int								undeflow_check(size_t min_limit, size_t test,
 									int digit, int last);
 int								overflow_check(size_t test, int digit);
-
+int								ft_strslen(char **strs);
 #endif

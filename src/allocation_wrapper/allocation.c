@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   allocation.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/22 00:33:39 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/30 18:21:41 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #include "../../include/minishell.h"
 
 void	*ft_malloc(size_t size)
@@ -23,7 +11,7 @@ void	*ft_malloc(size_t size)
 	return (allocated);
 }
 
-void	add_alloc(void *allocated)
+void	add_alloc(void *allocated )
 {
 	t_alloc	*list;
 	t_alloc	*new_alloc;

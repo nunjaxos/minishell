@@ -1,15 +1,3 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   lexer.h                                            :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/17 00:13:25 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/31 09:50:20 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
 #ifndef LEXER_H
 # define LEXER_H
 
@@ -25,10 +13,23 @@ typedef struct s_alloc			t_alloc;
 typedef enum s_type				t_type;
 typedef enum perms				t_perms;
 
-int								ft_strcmp(char *s1, char *s2);
-void							ft_strcpy(char *dst, char *src);
-t_token							*tokenizer(char **commands, int *expand_check);
-void							give_type(t_token *token, int expand_check);
-int								token_init(t_token **head, char **commands);
+void                        init_data(t_data *data, char *input);
+void                        append_token(t_elem **head, t_elem *new);
+void                        handle_quote(const char *input, int *i, t_elem **head);
+void                        merge_adjacent_word_tokens(t_elem **head);
+t_lexer                     *init_lexer(char *input);
+t_elem                      *create_token(char *content, enum e_type type, enum e_state state);
+t_elem                      *init_tokens(t_lexer *lexer);
+int                         process_single_char_token(t_lexer *lexer, t_elem **head,
+                                char c, enum e_type type);
+int                         process_special_chars(t_lexer *lexer, t_elem **head);
+int                         process_exit_status(t_lexer *lexer, t_elem **head);
+int                         process_escape_token(t_lexer *lexer, t_elem **head);
+int                         handle_redirections(const char *input, int i, t_elem **head);
+int                         handle_env(const char *input, int *i, t_elem **head);
+int	                        create_content_token(const char *input, int start, int end,
+							    t_elem **head, enum e_state state);
+int                         handle_space(const char *input, int *i, t_elem **head);
+int                         handle_word(const char *input, int i, t_elem **head);
 
 #endif

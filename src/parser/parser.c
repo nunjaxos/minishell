@@ -3,92 +3,118 @@
 /*                                                        :::      ::::::::   */
 /*   parser.c                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
+/*   By: abnemili <abnemili@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/05/16 23:10:35 by amouhand          #+#    #+#             */
-/*   Updated: 2024/09/05 10:48:37 by amouhand         ###   ########.fr       */
+/*   Created: 2025/06/13 11:24:50 by abnemili          #+#    #+#             */
+/*   Updated: 2025/06/29 11:37:06 by abnemili         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "../../include/parser.h"
+#include "minishell.h"
 
-t_parser	*init_parser(char **env)
+int	parse_pipeline(t_data *data)
 {
-	t_parser	*parser;
+	t_elem	*current;
+	t_cmd	*current_cmd;
+	t_cmd	*last_cmd;
 
-	parser = get_parser();
-	parser->alloc = NULL;
-	parser->env = set_env(env);
-	if (!parser->env)
-		parser->env = check_env();
-	parser->prompt = set_cwd();
-	parser->heredoc_abort = 0;
-	parser->expand = NULL;
-	parser->line = NULL;
-	parser->result = NULL;
-	parser->head = NULL;
-	parser->cmd = NULL;
-	return (parser);
+	if (!data || !data->elem)
+		return (0);
+	current = data->elem;
+	data->head = NULL;
+	last_cmd = NULL;
+	while (current)
+	{
+		skip_whitespace_ptr(&current);
+		if (!current)
+			break;
+		if (current->type == PIPE_LINE)
+		{
+			current = current->next;
+			skip_whitespace_ptr(&current);
+			if (!current)
+				return (0);
+			continue;
+		}
+		current_cmd = parse_command(data, &current);
+		if (!current_cmd)
+		{
+			free_cmd_list(data->head);
+			return (0);
+		}
+		if (!data->head)
+			data->head = current_cmd;
+		else
+			last_cmd->next = current_cmd;
+		last_cmd = current_cmd;
+	}
+	return (data->head != NULL);
 }
 
-int	read_input(t_parser *parser)
+// Fixed memory cleanup on failure
+t_cmd	*parse_command(t_data *data, t_elem **current)
 {
-	parser->prompt = set_cwd();
-	parser->line = readline(parser->prompt);
-	if (!parser->line)
+	t_cmd	*cmd;
+
+	if (!data || !current)
+		return (NULL);
+	cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+		return (NULL);
+	cmd->in_file = STDIN_FILENO;
+	cmd->out_file = STDOUT_FILENO;
+	cmd->full_cmd = NULL;
+	cmd->next = NULL;
+	if (!parse_arguments(data, current, cmd))
 	{
-		free_parser(parser);
-		exit(0);
+		free_cmd(cmd);
+		return (NULL);
 	}
-	if (ft_strlen(parser->line))
-	{
-		add_history(parser->line);
-		add_alloc(parser->line);
-	}
-	if (unclosed_quotes(parser->line))
-	{
-		print_error("Error: Unclosed Quotes\n", 0);
+	return (cmd);
+}
+
+// Fixed argument parsing with better error handling
+int	parse_arguments(t_data *data, t_elem **current, t_cmd *cmd)
+{
+	int	arg_count;
+	int	arg_index;
+
+	if (!data || !current || !cmd)
 		return (0);
+	arg_count = count_command_args(*current);
+	if (!allocate_cmd_args(cmd, arg_count))
+		return (0);
+	arg_index = 0;
+	while (*current && (*current)->type != PIPE_LINE)
+	{
+		skip_whitespace_ptr(current);
+		if (!*current || (*current)->type == PIPE_LINE)
+			break;
+		// Handle both WORD and ENV tokens as arguments
+		if ((*current)->type == WORD || (*current)->type == ENV)
+		{
+			if (!process_word_token(data, current, cmd, &arg_index))
+				return (0);
+		}
+		else if (!process_redirection(data, current, cmd))
+			return (0);
 	}
 	return (1);
 }
 
-int	parse_input(t_parser *parser)
+// Simplified redirection processing
+int	process_redirection(t_data *data, t_elem **current, t_cmd *cmd)
 {
-	int	*expand_check;
-
-	expand_check = NULL;
-	parser->result = mini_parsing(parser->line, &expand_check);
-	if (!parser->result)
-	{
-		parser_subfree(parser);
-		if (expand_check)
-			ft_free(expand_check);
-		expand_check = NULL;
+	if (!data || !current || !*current || !cmd)
 		return (0);
-	}
-	parser->head = tokenizer(parser->result, expand_check);
-	if (!parser->head)
-		return (ft_free(expand_check), 0);
-	ft_free(expand_check);
-	return (1);
-}
-
-int	tokenize_input(t_parser *parser)
-{
-	int	flag;
-
-	parser->cmd = parse_cmd(parser->head);
-	if (!parser->cmd)
-		return (0);
-	flag = checking_parsing(parser->head);
-	if (heredoc_configuring(parser->cmd))
-		return (0);
-	if (flag)
-		return (0);
-	if (expander(parser->cmd))
-		return (0);
-	fd_init(parser->cmd);
-	set_path(parser->cmd, parser->env);
+	if ((*current)->type == REDIR_IN)
+		return (handle_redirection_in(data, current, cmd));
+	if ((*current)->type == REDIR_OUT)
+		return (handle_redirection_out(data, current, cmd));
+	if ((*current)->type == DREDIR_OUT)
+		return (handle_redirection_append(data, current, cmd));
+	if ((*current)->type == HERE_DOC)
+		return (handle_heredoc(data, current, cmd));
+	*current = (*current)->next;
 	return (1);
 }
