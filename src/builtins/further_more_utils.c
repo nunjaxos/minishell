@@ -1,6 +1,6 @@
 #include "../../include/executor.h"
 
-char	**convert_path_to_array(t_env *env)
+char	**convert_path_to_array(t_env *env, t_data *data)
 {
 	char	**paths;
 	t_env	*tmp;
@@ -8,12 +8,12 @@ char	**convert_path_to_array(t_env *env)
 
 	tmp = env;
 	i = get_size(tmp);
-	paths = (char **)ft_malloc(sizeof(char *) * (i + 1));
+	paths = (char **)ft_malloc(sizeof(char *) * (i + 1), &(data->alloc));
 	if (!paths)
 		return (NULL);
 	tmp = env;
 	i = 0;
-	convert_path_to_arr_norm(tmp, paths, &i);
+	convert_path_to_arr_norm(tmp, paths, &i, data);
 	paths[i] = NULL;
 	return (paths);
 }
@@ -40,25 +40,25 @@ char	*get_valid_path(t_cmd *cmd, pid_t pid, t_data *data)
 		{
 			ft_putstr_fd("cd: Error: HOME not set\n", 2);
 			data->exit_status = 1;
-			check_for_child(pid, 1);
+			check_for_child(pid, 1, data);
 			return (NULL);
 		}
 	}
 	return (path);
 }
 
-void	update_pwd(t_env *env)
+void	update_pwd(t_env *env, t_data *data)
 {
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
-	add_alloc(pwd);
+	add_alloc(pwd, &(data->alloc));
 	if (get_value("PWD", env))
 	{
-		ft_free(get_value("PWD", env));
+		ft_free(get_value("PWD", env), &(data->alloc));
 		edit_env(env, "PWD", ft_strdup(pwd));
 	}
-	ft_free(pwd);
+	ft_free(pwd, &(data->alloc));
 }
 
 int	key_len(char *str)
@@ -69,4 +69,18 @@ int	key_len(char *str)
 	while (str[i] && (str[i] != '=' && !(str[i] == '+' && str[i + 1] == '=')))
 		i++;
 	return (i);
+}
+
+char	*get_value(char *key, t_env *env)
+{
+	t_env	*tmp;
+
+	tmp = env;
+	while (tmp)
+	{
+		if (tmp->name && !ft_strcmp(tmp->name, key))
+			return (tmp->value);
+		tmp = tmp->next;
+	}
+	return (NULL);
 }

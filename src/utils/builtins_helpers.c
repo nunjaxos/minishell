@@ -1,16 +1,4 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   builtins_helpers.c                                 :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/08/31 18:15:19 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/31 18:15:47 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
-
-#include "../../include/minishell.h"
+#include "../../include/executor.h"
 
 int	ft_strslen(char **strs)
 {
@@ -35,4 +23,48 @@ int	undeflow_check(size_t min_limit, size_t test, int digit, int last)
 	if (test > min_limit || (test == min_limit && digit > last))
 		return (2);
 	return (0);
+}
+
+void	edit_env(t_env *head, char *key, char *new_value)
+{
+	t_env	*current;
+
+	current = head;
+	while (current)
+	{
+		if (!ft_strcmp(current->name, key))
+		{
+			current->value = new_value;
+			return ;
+		}
+		current = current->next;
+	}
+}
+
+char	*ft_strndup(const char *s, size_t n)
+{
+	size_t	i;
+	char	*dup;
+
+	if (!s)
+		return (NULL);
+	dup = malloc(n + 1);
+	if (!dup)
+		return (NULL);
+	i = 0;
+	while (i < n && s[i])
+	{
+		dup[i] = s[i];
+		i++;
+	}
+	dup[i] = '\0';
+	return (dup);
+}
+
+void free_data(t_data *data)
+{	
+    garbage_removal(&(data->alloc)); // if this is generic
+    free(data);
+    data = NULL;
+    rl_clear_history();
 }

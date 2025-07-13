@@ -1,4 +1,4 @@
-#include "../../include/builtins.h"
+#include "../../include/executor.h"
 
 t_env *create_env_node(const char *env)
 {
@@ -35,17 +35,14 @@ void add_env_back(t_env **lst, t_env *new_node)
 	temp->next = new_node;
 }
 
-void init_env_list(char **envp, t_data *data)
+void init_env_list(char **envp, t_env **env_list)
 {
 	int i = 0;
-	t_env *node;
-
-	data->n_env = NULL;
 	while (envp[i])
 	{
-		node = create_env_node(envp[i]);
+		t_env *node = create_env_node(envp[i]);
 		if (node)
-			add_env_back(&data->n_env, node);
+			add_env_back(env_list, node);
 		i++;
 	}
 }
@@ -62,4 +59,3 @@ void free_env_list(t_env *env)
 		free(tmp);
 	}
 }
-

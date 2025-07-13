@@ -1,4 +1,4 @@
-#include "../../include/expander.h"
+#include "../../include/executor.h"
 
 int	export_error_display(t_cmd *cmd, char *key, char *value, int *i, t_data *data)
 {
@@ -39,7 +39,7 @@ int	export_null(int *i, t_cmd *cmd, t_data *data)
 			ft_putstr_fd("=", 2);
 		ft_putstr_fd("': not a valid identifier\n", 2);
 		*i += 1;
-		ft_free(key);
+		ft_free(key, &(data->alloc));
 		data->exit_status = 1;
 		return (1);
 	}
@@ -70,9 +70,9 @@ void	export_args_handle(t_cmd *cmd, char *key, char *value, t_data *data)
 		else if (export_null(&i, cmd, data))
 			continue ;
 		i++;
-		ft_free(key);
+		ft_free(key, &(data->alloc));
 	}
-	check_for_child(cmd->pid, data->exit_status);
+	check_for_child(cmd->pid, data->exit_status, data);
 }
 
 int	ft_export(t_cmd *cmd, t_data *data)

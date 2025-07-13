@@ -1,40 +1,35 @@
-#include "../../include/minishell.h"
+#include "../../include/executor.h"
 
-void	garbage_removal(void)
+void	garbage_removal(t_alloc **alloc)
 {
 	t_alloc	*list;
 	t_alloc	*tmp;
 
-	list = get_parser()->alloc;
+	if (!alloc || !*alloc)
+		return ;
+	list = *alloc;
 	while (list)
 	{
 		tmp = list->next;
 		if (list->allocated)
-		{
 			free(list->allocated);
-			list->allocated = NULL;
-		}
-		if (list)
-		{
-			free(list);
-			list = NULL;
-		}
+		free(list);
 		list = tmp;
 	}
-	get_parser()->alloc = NULL;
+	*alloc = NULL;
 }
 
-static void	remove_from_list(t_alloc **list, t_alloc *prev)
+static void	remove_from_list(t_alloc **alloc, t_alloc **list, t_alloc *prev)
 {
 	if (prev)
 		prev->next = (*list)->next;
 	else
-		get_parser()->alloc = (*list)->next;
+		*alloc = (*list)->next;
 }
 
 static void	free_allocated_memory(t_alloc *list)
 {
-	if (list->allocated)
+	if (list && list->allocated)
 	{
 		free(list->allocated);
 		list->allocated = NULL;
@@ -44,26 +39,23 @@ static void	free_allocated_memory(t_alloc *list)
 static void	free_list_node(t_alloc *list)
 {
 	if (list)
-	{
 		free(list);
-		list = NULL;
-	}
 }
 
-void	ft_free(void *ptr)
+void	ft_free(void *ptr, t_alloc **alloc)
 {
 	t_alloc	*list;
 	t_alloc	*prev;
 
-	if (!ptr)
+	if (!ptr || !alloc || !*alloc)
 		return ;
-	list = get_parser()->alloc;
+	list = *alloc;
 	prev = NULL;
 	while (list)
 	{
 		if (list->allocated == ptr)
 		{
-			remove_from_list(&list, prev);
+			remove_from_list(alloc, &list, prev);
 			free_allocated_memory(list);
 			free_list_node(list);
 			break ;

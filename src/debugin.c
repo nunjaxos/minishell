@@ -10,7 +10,7 @@
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "minishell.h"
+#include "executor.h"
 
 // Function to print a single command's details
 void print_cmd_debug(t_cmd *cmd, int cmd_num)

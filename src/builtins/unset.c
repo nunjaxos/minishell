@@ -1,6 +1,6 @@
-#include "../../include/builtins.h"
+#include "../../include/executor.h"
 
-void	delete_env(t_env *env, char *key)
+void	delete_env(t_env *env, char *key, t_data *data)
 {
 	t_env	*tmp;
 	t_env	*prev;
@@ -15,10 +15,10 @@ void	delete_env(t_env *env, char *key)
 				prev->next = tmp->next;
 			else
 				env = tmp->next;
-			ft_free(tmp->name);
+			ft_free(tmp->name, &(data->alloc));
 			if (tmp->value)
-				ft_free(tmp->value);
-			ft_free(tmp);
+				ft_free(tmp->value, &(data->alloc));
+			ft_free(tmp, &(data->alloc));
 			return ;
 		}
 		prev = tmp;
@@ -34,8 +34,8 @@ void	ft_unset(t_cmd *cmd, pid_t pid, t_data *data)
 	while (cmd->full_cmd[i])
 	{
 		if (env_key_exists(data->n_env, cmd->full_cmd[i]))
-			delete_env(data->n_env, cmd->full_cmd[i]);
+			delete_env(data->n_env, cmd->full_cmd[i], data);
 		i++;
 	}
-	check_for_child(pid, 0);
+	check_for_child(pid, 0, data);
 }

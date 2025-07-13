@@ -25,7 +25,7 @@ void execute_cmd(t_cmd *cmd, int cmd_count, int *fd, int i, t_data *data)
 		error_display(cmd);
 		if (check_builtins(data, cmd, cmd->pid))
 			exit(0);
-		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env));
+		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env, data));
 		perror("execve");
 		free_data(data);
 		exit(255);
@@ -84,7 +84,7 @@ void create_pipe(t_cmd *cmds, int cmd_count, t_data *data)
 
 	i = 0;
 	cmd = cmds;
-	fd = ft_malloc(sizeof(int) * (2 * (cmd_count - 1)));
+	fd = ft_malloc(sizeof(int) * (2 * (cmd_count - 1)), &(data->alloc));
 	while (i < cmd_count - 1)
 	{
 		if (pipe(fd + i * 2) < 0)
@@ -96,10 +96,10 @@ void create_pipe(t_cmd *cmds, int cmd_count, t_data *data)
 	cmd = cmds;
 	while (cmd)
 	{
-		pipe_utils(cmd, status, data); // pass data for status update
+		pipe_utils(cmd, status, data);
 		cmd = cmd->next;
 	}
-	ft_free(fd);
+	ft_free(fd, &(data->alloc));
 	g_sigchild = 0;
 	signal(SIGQUIT, sigquit_handler);
 }

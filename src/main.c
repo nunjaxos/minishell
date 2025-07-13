@@ -1,4 +1,4 @@
-#include "include/minishell.h"
+#include "../include/executor.h"
 
 int	g_sigchild;
 
@@ -9,7 +9,6 @@ int	main(int ac, char **av, char **env)
 
 	(void)ac;
 	(void)av;
-	signal(SIGINT, sigint_handler);
 	signal(SIGQUIT, SIG_IGN);
 
 	init_env_list(env); // initializes environment into your global/env storage

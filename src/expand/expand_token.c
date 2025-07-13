@@ -12,8 +12,6 @@
 
 #include "minishell.h"
 
-extern t_env	*g_envp;
-
 int	process_regular_char(char *content, int *i, t_expand_data *data)
 {
 	if (!(*(data->res) = realloc_result(*(data->res), data->max, *(data->len)

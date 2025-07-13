@@ -1,7 +1,7 @@
 #ifndef LEXER_H
 # define LEXER_H
 
-# include "minishell.h"
+# include "executor.h"
 
 typedef struct s_token			t_token;
 typedef struct s_cmd			t_cmd;

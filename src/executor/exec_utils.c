@@ -26,7 +26,7 @@ int	get_size(t_env *env)
 	return (i);
 }
 
-void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i)
+void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i, t_data *data)
 {
 	char	*temp;
 
@@ -37,7 +37,7 @@ void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i)
 			temp = ft_strjoin(tmp->name, "=");
 			temp = ft_strjoin_free(temp, tmp->value, 1);
 			paths[(*i)] = ft_strdup(temp);
-			ft_free(temp);
+			ft_free(temp, &(data->alloc));
 			*i += 1;
 		}
 		tmp = tmp->next;
@@ -52,7 +52,7 @@ void	export_not_valid(char *tmp, int *i, char *value, char *key, t_data *data)
 		ft_putstr_fd(key, 2);
 	else
 		ft_putstr_fd(tmp, 2);
-	ft_free(tmp);
+	ft_free(tmp, &(data->alloc));
 	ft_putstr_fd("': not a valid identifier\n", 2);
 	(*i)++;
 	data->exit_status = 1;

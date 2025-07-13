@@ -1,4 +1,4 @@
-#include "../../include/signals.h"
+#include "../../include/executor.h"
 
 void	sigint_handler(int signo, t_data *data)
 {

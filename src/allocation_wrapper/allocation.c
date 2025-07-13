@@ -1,31 +1,32 @@
-#include "../../include/minishell.h"
+#include "../../include/executor.h"
 
-void	*ft_malloc(size_t size)
+void	*ft_malloc(size_t size, t_alloc **alloc)
 {
-	void	*allocated;
-
-	allocated = malloc(size);
+	void	*allocated = malloc(size);
 	if (!allocated)
 		return (NULL);
-	add_alloc(allocated);
+	add_alloc(allocated, alloc);
 	return (allocated);
 }
 
-void	add_alloc(void *allocated )
+void	add_alloc(void *allocated, t_alloc **alloc)
 {
 	t_alloc	*list;
 	t_alloc	*new_alloc;
 
+	if (!alloc || !allocated)
+		return ;
 	new_alloc = malloc(sizeof(t_alloc));
 	if (!new_alloc)
 		return ;
-	list = get_parser()->alloc;
 	new_alloc->allocated = allocated;
 	new_alloc->next = NULL;
-	if (!list)
-		get_parser()->alloc = new_alloc;
+
+	if (!*alloc)
+		*alloc = new_alloc;
 	else
 	{
+		list = *alloc;
 		while (list->next)
 			list = list->next;
 		list->next = new_alloc;

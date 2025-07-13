@@ -12,15 +12,14 @@
 
 #include "minishell.h"
 
-extern t_env	*g_envp;
 
-char	*get_env_value(char *name)
+char	*get_env_value(t_env *env, char *name)
 {
 	t_env	*temp;
 
-	temp = g_envp;
-	if (!name)
+	if (!name || !env)
 		return (NULL);
+	temp = env;
 	while (temp)
 	{
 		if (strcmp(temp->name, name) == 0)
@@ -29,6 +28,7 @@ char	*get_env_value(char *name)
 	}
 	return (NULL);
 }
+
 
 int	is_valid_var_char(char c)
 {

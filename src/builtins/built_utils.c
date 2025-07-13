@@ -1,11 +1,11 @@
-#include "../../include/builtins.h"
+#include "../../include/executor.h"
 
 int	check_for_child(pid_t pid, int exit_stat, t_data *data) 
 {
 	if (pid == 0)
 	{
 		data->exit_status = exit_stat;
-		free_parser(data);
+		free_data(data);
 		exit(exit_stat);
 	}
 	else
@@ -13,18 +13,19 @@ int	check_for_child(pid_t pid, int exit_stat, t_data *data)
 	return (0);
 }
 
-
 t_env	*copy_env_list(t_env *env)
 {
 	t_env	*tmp;
 	t_env	*new;
 	t_env	*head;
+	t_alloc *alloc;
+
 
 	tmp = env;
 	head = NULL;
 	while (tmp)
 	{
-		new = ft_malloc(sizeof(t_env));
+		new = ft_malloc(sizeof(t_env), &alloc);
 		if (!new)
 			return (NULL);
 		new->name = ft_strdup(tmp->name);
@@ -98,4 +99,16 @@ int	check_valid_name(char *name)
 		i++;
 	}
 	return (1);
+}
+
+int	ft_strcmp(char *s1, char *s2)
+{
+	int	i;
+
+	if (!s1 || !s2)
+		return (1);
+	i = 0;
+	while (s1[i] && s2[i] && s1[i] == s2[i])
+		i++;
+	return (s1[i] - s2[i]);
 }

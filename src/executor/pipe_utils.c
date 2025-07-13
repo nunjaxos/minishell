@@ -23,7 +23,7 @@ void	one_cmd_norm(t_cmd *cmd, t_data *data, pid_t pid)
 			free_parser(data);
 			exit(0);
 		}
-		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env));
+		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env, data));
 		perror("execve");
 		exit(255);
 	}
@@ -47,7 +47,7 @@ void exec_one_command(t_cmd *cmd, t_data *data)
 			dup2(cmd->out_file, STDOUT_FILENO);
 		if (check_builtins(data, cmd, pid))
 			exit(0);
-		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env));
+		execve(cmd->full_cmd[0], cmd->full_cmd, convert_path_to_array(data->n_env, data));
 		perror("execve");
 		free_data(data);
 		exit(255);

@@ -1,18 +1,6 @@
-/* ************************************************************************** */
-/*                                                                            */
-/*                                                        :::      ::::::::   */
-/*   free_stuff.c                                       :+:      :+:    :+:   */
-/*                                                    +:+ +:+         +:+     */
-/*   By: amouhand <amouhand@student.1337.ma>        +#+  +:+       +#+        */
-/*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2024/06/22 22:25:56 by amouhand          #+#    #+#             */
-/*   Updated: 2024/08/30 18:17:11 by amouhand         ###   ########.fr       */
-/*                                                                            */
-/* ************************************************************************** */
+#include "../../include/executor.h"
 
-#include "../../include/utils.h"
-
-void	free_tokens(t_token **head)
+void	free_tokens(t_token **head, t_data *data)
 {
 	t_token	*tmp;
 	t_token	*current;
@@ -26,16 +14,16 @@ void	free_tokens(t_token **head)
 		current = current->next;
 		if (tmp->value)
 		{
-			ft_free(tmp->value);
+			ft_free(tmp->value, &(data->alloc));
 			tmp->value = NULL;
 		}
-		ft_free(tmp);
+		ft_free(tmp, &(data->alloc));
 		tmp = NULL;
 	}
 	*head = NULL;
 }
 
-void	free_char_array(char **array)
+void	free_char_array(char **array, t_data *data)
 {
 	int	i;
 
@@ -46,12 +34,12 @@ void	free_char_array(char **array)
 	{
 		if (array[i])
 		{
-			ft_free(array[i]);
+			ft_free(array[i], &(data->alloc));
 			array[i] = NULL;
 		}
 		i++;
 	}
-	ft_free(array);
+	ft_free(array, &(data->alloc));
 	array = NULL;
 }
 

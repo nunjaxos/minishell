@@ -1,4 +1,4 @@
-#include "../../include/builtins.h"
+#include "../../include/executor.h"
 
 int	check_for_doubles(char *args)
 {
@@ -16,7 +16,7 @@ int	check_for_doubles(char *args)
 	return (0);
 }
 
-void	ft_echo(t_cmd *cmd, pid_t pid)
+void	ft_echo(t_cmd *cmd, pid_t pid, t_data *data)
 {
 	int	i;
 
@@ -34,9 +34,46 @@ void	ft_echo(t_cmd *cmd, pid_t pid)
 	}
 	if (cmd->full_cmd[1] && !check_for_doubles(cmd->full_cmd[1]))
 	{
-		check_for_child(pid, 0);
+		check_for_child(pid, 0, data);
 		return ;
 	}
 	ft_putstr_fd("\n", 1);
-	check_for_child(pid, 0);
+	check_for_child(pid, 0, data);
+}
+
+int main(int argc, char **argv)
+{
+    t_cmd   cmd;
+    t_data  data;
+    pid_t   pid = 12345; // dummy pid
+
+    if (argc < 2)
+    {
+        printf("Usage: %s [args...]\n", argv[0]);
+        return 1;
+    }
+
+    // Set cmd.full_cmd to argv (argv[0] is program name, but echo expects first arg as "echo")
+    // So we create a new array with "echo" at argv[0], then the rest from argv[1..]
+    
+    // Allocate a new array for full_cmd
+    char **full_cmd = malloc(sizeof(char *) * (argc + 1));
+    if (!full_cmd)
+        return 1; // malloc failure
+
+    full_cmd[0] = "echo";  // pretend the command is "echo"
+    for (int i = 1; i < argc; i++)
+        full_cmd[i] = argv[i];
+    full_cmd[argc] = NULL;
+
+    cmd.full_cmd = full_cmd;
+    data.exit_status = 0;
+
+    ft_echo(&cmd, pid, &data);
+
+    printf("\nExit status: %d\n", data.exit_status);
+
+    free(full_cmd);
+
+    return 0;
 }
