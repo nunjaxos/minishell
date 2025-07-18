@@ -41,7 +41,6 @@ void	ft_echo(t_cmd *cmd, pid_t pid)
 	check_for_child(pid, 0);
 }
 
-
 // int main(int argc, char **argv)
 // {
 //     t_cmd   cmd;
@@ -53,7 +52,7 @@ void	ft_echo(t_cmd *cmd, pid_t pid)
 //         return 1;
 //     }
 //     char **full_cmd = malloc(sizeof(char *) * (argc + 1));
-//     if (!full_cmd)
+//     if (!full_cmd) 
 //         return 1; // malloc failure
 //     full_cmd[0] = "echo";  // pretend the command is "echo"
 //     for (int i = 1; i < argc; i++)
@@ -62,7 +61,7 @@ void	ft_echo(t_cmd *cmd, pid_t pid)
 
 //     cmd.full_cmd = full_cmd;
 //     data.exit_status = 0;
-//     ft_echo(&cmd, pid, &data);
+//     ft_echo(&cmd, pid);
 //     printf("\nExit status: %d\n", data.exit_status);
 //     free(full_cmd);
 //     return 0;

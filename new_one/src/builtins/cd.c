@@ -92,37 +92,36 @@ int	ft_cd(t_cmd *cmd, pid_t pid)
 	return (0);
 }
 
+int	main(int argc, char **argv, char **envp)
+{
+	(void)argc;
+	(void)argv;
+	t_data	data;
+	t_cmd	cmd;
+	// char	*args1[] = {"cd", "/", NULL}; // ✅ Test 1: go to root
+	// char *args2[] = {"cd", "-", NULL}; // ✅ Test 2: go to OLDPWD
+	// char *args3[] = {"cd", "~", NULL}; // ✅ Test 3: go to HOME
+	// char *args4[] = {"cd", "/invalid", NULL}; // ❌ Test 4: error path
+	char *args5[] = {"cd", "dir1", "dir2", NULL}; // ❌ Test 5: too many args
 
-// int	main(int argc, char **argv, char **envp)
-// {
-// 	(void)argc;
-// 	(void)argv;
-// 	t_data	data;
-// 	t_cmd	cmd;
-// 	// char	*args1[] = {"cd", "/", NULL}; // ✅ Test 1: go to root
-// 	// char *args2[] = {"cd", "-", NULL}; // ✅ Test 2: go to OLDPWD
-// 	char *args3[] = {"cd", "~", NULL}; // ✅ Test 3: go to HOME
-// 	// char *args4[] = {"cd", "/invalid", NULL}; // ❌ Test 4: error path
-// 	// char *args5[] = {"cd", "dir1", "dir2", NULL}; // ❌ Test 5: too many args
+	// ✅ Clean init
+	ft_bzero(&data, sizeof(t_data));
+	init_env_list(envp, &data);
 
-// 	// ✅ Clean init
-// 	ft_bzero(&data, sizeof(t_data));
-// 	init_env_list(envp, &data);
+	cmd.full_cmd = args5; // change here to test other cases
+	cmd.pid = 0;
 
-// 	cmd.full_cmd = args3; // change here to test other cases
-// 	cmd.pid = 0;
+	printf("=== ENV BEFORE CD ===\n");
+	print_export_list(data.n_env);
 
-// 	printf("=== ENV BEFORE CD ===\n");
-// 	print_export_list(data.n_env, &data);
+	if (ft_cd(&cmd, cmd.pid) == 0)
+		printf("cd success ✅\n");
+	else
+		printf("cd failed ❌\n");
 
-// 	if (ft_cd(&cmd, cmd.pid, &data) == 0)
-// 		printf("cd success ✅\n");
-// 	else
-// 		printf("cd failed ❌\n");
+	printf("=== ENV AFTER CD ===\n");
+	print_export_list(data.n_env);
 
-// 	printf("=== ENV AFTER CD ===\n");
-// 	print_export_list(data.n_env, &data);
-
-// 	// garbage_removal(&data.alloc);
-// 	return (0);
-// }
+	// garbage_removal(&data.alloc);
+	return (0);
+}

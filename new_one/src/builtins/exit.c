@@ -83,7 +83,6 @@ int	ft_exit(t_cmd *cmd, pid_t pid)
 	exit(exit_status);
 }
 
-
 // int	main(int argc, char **argv, char **envp)
 // {
 // 	t_data	data;
@@ -95,25 +94,14 @@ int	ft_exit(t_cmd *cmd, pid_t pid)
 // 	ft_bzero(&data, sizeof(t_data));
 // 	init_env_list(envp, &data);
 
-// 	// Example 1: no args → should exit with current exit_status (default 0)
-// 	// char *args[] = {"exit", NULL};
-
-// 	// Example 2: one numeric arg → should exit with 42
-// 	// char *args[] = {"exit", "42", NULL};
-
-// 	// Example 3: invalid arg → should print error and exit with 2
-// 	char *args[] = {"exit", "hello", NULL};
-
-// 	// Example 4: too many args → should print error and not exit
-// 	// char *args[] = {"exit", "1", "2", NULL};
+// 	char *args[] = {"exit", "1", "2", NULL};
 
 // 	cmd.full_cmd = args;
-// 	cmd.pid = 1; // simulate parent process
+// 	cmd.count = 2;  // important: count your args
+// 	cmd.pid = 1;
 
-// 	ft_exit(&cmd, cmd.pid, &data);
+// 	int exit_code = ft_exit(&cmd, cmd.pid);
 
-// 	// This line should never run unless ft_exit returns early
-// 	printf("After ft_exit\n");
-
-// 	return (0);
+// 	printf("ft_exit returned %d\n", exit_code);
+// 	return exit_code;  // <-- return ft_exit code here
 // }

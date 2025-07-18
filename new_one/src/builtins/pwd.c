@@ -21,7 +21,7 @@ void	ft_pwd(pid_t pid)
 // 	data.alloc = NULL; // In case your allocator uses this
 
 // 	// Simulate running `pwd` as a built-in (pid = 0)
-// 	ft_pwd(0, &data);
+// 	ft_pwd(0);
 
 // 	return 0;
 // }

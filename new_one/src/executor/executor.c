@@ -86,51 +86,51 @@ t_env	*find_env(t_env *env, char *name)
 	return (NULL);
 }
 
-int	main(int argc, char **argv, char **envp)
-{
-	(void)argc;
-	(void)argv;
+// int	main(int argc, char **argv, char **envp)
+// {
+// 	(void)argc;
+// 	(void)argv;
 
-	// Allocate and initialize data
-	t_data	*data = malloc(sizeof(t_data));
-	if (!data)
-		return (1);
-	ft_bzero(data, sizeof(t_data));
+// 	// Allocate and initialize data
+// 	t_data	*data = malloc(sizeof(t_data));
+// 	if (!data)
+// 		return (1);
+// 	ft_bzero(data, sizeof(t_data));
 
-	// Initialize environment list (if your logic depends on it)
-	init_env_list(envp, data->n_env);
+// 	// Initialize environment list (if your logic depends on it)
+// 	init_env_list(envp, data->n_env);
 
-	// Create one command (e.g. "ls -la")
-	t_cmd	*cmd = malloc(sizeof(t_cmd));
-	if (!cmd)
-		return (1);
-	ft_bzero(cmd, sizeof(t_cmd));
+// 	// Create one command (e.g. "ls -la")
+// 	t_cmd	*cmd = malloc(sizeof(t_cmd));
+// 	if (!cmd)
+// 		return (1);
+// 	ft_bzero(cmd, sizeof(t_cmd));
 
-	// Build the full command array
-	// full_cmd[0] is the command name
-	// full_cmd[1+] are arguments
-	cmd->full_cmd = malloc(sizeof(char *) * 3);
-	cmd->full_cmd[0] = ft_strdup("ls");
-	cmd->full_cmd[1] = ft_strdup("-la");
-	cmd->full_cmd[2] = NULL;
+// 	// Build the full command array
+// 	// full_cmd[0] is the command name
+// 	// full_cmd[1+] are arguments
+// 	cmd->full_cmd = malloc(sizeof(char *) * 3);
+// 	cmd->full_cmd[0] = ft_strdup("ls");
+// 	cmd->full_cmd[1] = ft_strdup("-la");
+// 	cmd->full_cmd[2] = NULL;
 
-	// Standard input/output
-	cmd->in_file = STDIN_FILENO;
-	cmd->out_file = STDOUT_FILENO;
+// 	// Standard input/output
+// 	cmd->in_file = STDIN_FILENO;
+// 	cmd->out_file = STDOUT_FILENO;
 
-	// No next command (only one)
-	cmd->next = NULL;
+// 	// No next command (only one)
+// 	cmd->next = NULL;
 
-	// Point data->head to the command list
-	data->head = &cmd;
+// 	// Point data->head to the command list
+// 	data->head = &cmd;
 
-	// Run the executor (this should fork + exec ls)
-	execute_commands(data);
+// 	// Run the executor (this should fork + exec ls)
+// 	execute_commands(data);
 
-	// Cleanup (if your project has a proper free system, call it here)
-	free_char_array(cmd->full_cmd);
-	free(cmd);
-	free(data);
+// 	// Cleanup (if your project has a proper free system, call it here)
+// 	free_char_array(cmd->full_cmd);
+// 	free(cmd);
+// 	free(data);
 
-	return (0);
-}
+// 	return (0);
+// }

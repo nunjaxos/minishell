@@ -115,7 +115,6 @@ void	print_export_list(t_env *env)
 	free_env(to_free);
 }
 
-
 // int	main(int argc, char **argv, char **envp)
 // {
 // 	(void)argc;
@@ -134,14 +133,14 @@ void	print_export_list(t_env *env)
 // 	cmd.pid = 0;
 
 // 	printf("=== BEFORE EXPORT ===\n");
-// 	print_export_list(data.n_env, &data);
+// 	print_export_list(data.n_env);
 
-// 	ft_export(&cmd, &data);
+// 	ft_export(&cmd);
 // 	printf("\n=== AFTER EXPORT ===\n");
-// 	print_export_list(data.n_env, &data);
+// 	print_export_list(data.n_env);
 
 // 	// Clean-up
-// 	// garbage_removal(&data.alloc);
+// 	garbage_removal();
 
 // 	return (0);
 // }

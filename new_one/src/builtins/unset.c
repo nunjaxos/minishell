@@ -57,27 +57,27 @@ void	ft_unset(t_cmd *cmd, pid_t pid)
 // 	init_env_list(envp, data);
 
 // 	printf("=== ENV BEFORE UNSET ===\n");
-// 	print_export_list(data->n_env, data);
+// 	print_export_list(data->n_env);
 // 	printf("yppppp\n");
 // 	char *unset1[] = {"unset", "PATH", NULL};
 // 	cmd.full_cmd = unset1;
 // 	cmd.pid = 0;
-// 	ft_unset(&cmd, cmd.pid, data);
+// 	ft_unset(&cmd, cmd.pid);
 // 	printf("nooo\n");
 // 	char *unset2[] = {"unset", "HOME", NULL};
 // 	cmd.full_cmd = unset2;
-// 	ft_unset(&cmd, cmd.pid, data);
+// 	ft_unset(&cmd, cmd.pid);
 
 // 	char *unset3[] = {"unset", "NOT_PRESENT", NULL};
 // 	cmd.full_cmd = unset3;
-// 	ft_unset(&cmd, cmd.pid, data);
+// 	ft_unset(&cmd, cmd.pid);
 
 // 	printf("\n=== ENV AFTER UNSET ===\n");
-// 	print_export_list(data->n_env, data);
+// 	print_export_list(data->n_env);
 
-// 	// free_env(data->n_env, data);
-// 	// garbage_removal(&data->alloc);
-// 	// free(data);  // ✅ don't forget to free the struct itself
+// 	free_env(data->n_env);
+// 	garbage_removal();
+// 	free(data);  // ✅ don't forget to free the struct itself
 
 // 	return 0;
 // }
