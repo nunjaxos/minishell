@@ -17,16 +17,16 @@ int	check_valid_name(char *name)
 	return (1);
 }
 
-void	export_not_valid(char *tmp, int *i, char *value, char *key, t_data *data)
+void	export_not_valid(char *tmp, int *i, char *value, char *key)
 {
-	tmp = ft_strjoin_malloc("=", value, data);  // safe allocation
+	tmp = ft_strjoin("=", value);
 	ft_putstr_fd("minishell: export: `", 2);
 	if (ft_strlen(key))
 		ft_putstr_fd(key, 2);
 	else
 		ft_putstr_fd(tmp, 2);
-	// ft_free(tmp, &(data->alloc)); // now safe
+	ft_free(tmp);
 	ft_putstr_fd("': not a valid identifier\n", 2);
-	(*i)++;
-	data->exit_status = 1;
+	*i += 1;
+	get_data()->exit_status = 1;
 }

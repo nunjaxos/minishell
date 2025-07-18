@@ -2,15 +2,16 @@
 
 int	execute_commands(t_data *data)
 {
-	t_cmd	*cmd = data->head;
-	int		cmd_count = count_commands(cmd);
-
-	update_last_cmd(data);
-
-	if (cmd_count == 1)
-		exec_one_command(cmd, data);
+	if (count_all_commands(data->head) == 1)
+	{
+		update_last_cmd(get_data());
+		exec_one_command(data->head[0], data);
+	}
 	else
-		create_pipe(cmd, cmd_count, data);
+	{
+		update_last_cmd(get_data());
+		create_pipe(data->head, count_all_commands(data->head));
+	}
 
 	return (0);
 }
@@ -59,7 +60,7 @@ char *find_full_path(char *cmd, t_env *env)
     while (paths[i])
     {
         full_path = ft_strjoin(paths[i], "/");
-        full_path = ft_strjoin_free(full_path, cmd, 1, get_data()); // custom function to concat and free first param
+        full_path = ft_strjoin_free(full_path, cmd, 1); // custom function to concat and free first param
         if (stat(full_path, &sb) == 0 && (sb.st_mode & S_IXUSR))
         {
             // Free split array
@@ -85,61 +86,51 @@ t_env	*find_env(t_env *env, char *name)
 	return (NULL);
 }
 
-
 int	main(int argc, char **argv, char **envp)
 {
 	(void)argc;
 	(void)argv;
 
-	t_data	*data;
-	t_cmd	*cmd1;
-	t_cmd	*cmd2;
-
-	// Allocate and init t_data
-	data = malloc(sizeof(t_data));
+	// Allocate and initialize data
+	t_data	*data = malloc(sizeof(t_data));
+	if (!data)
+		return (1);
 	ft_bzero(data, sizeof(t_data));
-	init_env_list(envp, data); // your own function to init env list
 
-	// Create cmd1: echo hello
-	cmd1 = malloc(sizeof(t_cmd));
-	ft_bzero(cmd1, sizeof(t_cmd));
-	cmd1->full_cmd = malloc(sizeof(char *) * 3);
-	cmd1->full_cmd[0] = ft_strdup("echo");
-	cmd1->full_cmd[1] = ft_strdup("hello");
-	cmd1->full_cmd[2] = NULL;
-	cmd1->in_file = 0;
-	cmd1->out_file = 1;
-	cmd1->next = NULL;
+	// Initialize environment list (if your logic depends on it)
+	init_env_list(envp, data->n_env);
 
-	// Create cmd2: grep h
-	cmd2 = malloc(sizeof(t_cmd));
-	ft_bzero(cmd2, sizeof(t_cmd));
-	cmd2->full_cmd = malloc(sizeof(char *) * 3);
-	cmd2->full_cmd[0] = ft_strdup("grep");
-	cmd2->full_cmd[1] = ft_strdup("h");
-	cmd2->full_cmd[2] = NULL;
-	cmd2->in_file = 0;
-	cmd2->out_file = 1;
-	cmd2->next = NULL;
+	// Create one command (e.g. "ls -la")
+	t_cmd	*cmd = malloc(sizeof(t_cmd));
+	if (!cmd)
+		return (1);
+	ft_bzero(cmd, sizeof(t_cmd));
 
-	// Link them for piping
-	cmd1->next = cmd2;
+	// Build the full command array
+	// full_cmd[0] is the command name
+	// full_cmd[1+] are arguments
+	cmd->full_cmd = malloc(sizeof(char *) * 3);
+	cmd->full_cmd[0] = ft_strdup("ls");
+	cmd->full_cmd[1] = ft_strdup("-la");
+	cmd->full_cmd[2] = NULL;
 
-	// Setup data
-	data->head = cmd1;
+	// Standard input/output
+	cmd->in_file = STDIN_FILENO;
+	cmd->out_file = STDOUT_FILENO;
 
-	// Call the executor
+	// No next command (only one)
+	cmd->next = NULL;
+
+	// Point data->head to the command list
+	data->head = &cmd;
+
+	// Run the executor (this should fork + exec ls)
 	execute_commands(data);
 
-	// Cleanup (if needed)
+	// Cleanup (if your project has a proper free system, call it here)
+	free_char_array(cmd->full_cmd);
+	free(cmd);
+	free(data);
+
 	return (0);
-}
-
-t_data	*get_data(void)
-{
-	static t_data	*data = NULL;
-
-	if (!data)
-		data = malloc(sizeof(t_data));
-	return (data);
 }

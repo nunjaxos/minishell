@@ -1,26 +1,24 @@
 #include "../../include/executor.h"
 
-void	delete_env(t_env **env, char *key, t_data *data)
+void	delete_env(t_env *env, char *name)
 {
-	(void)data;
 	t_env	*tmp;
 	t_env	*prev;
 
-	tmp = *env;
+	tmp = env;
 	prev = NULL;
 	while (tmp)
 	{
-		if (!ft_strcmp(tmp->name, key))
+		if (!ft_strcmp(tmp->name, name))
 		{
-			printf("Unsetting key: %s\n", key);
 			if (prev)
 				prev->next = tmp->next;
 			else
-				*env = tmp->next;
-			// ft_free(tmp->name, &(data->alloc));
-			// if (tmp->value)
-			// 	ft_free(tmp->value, &(data->alloc));
-			// ft_free(tmp, &(data->alloc));
+				env = tmp->next;
+			ft_free(tmp->name);
+			if (tmp->value)
+				ft_free(tmp->value);
+			ft_free(tmp);
 			return ;
 		}
 		prev = tmp;
@@ -28,20 +26,18 @@ void	delete_env(t_env **env, char *key, t_data *data)
 	}
 }
 
-void	ft_unset(t_cmd *cmd, pid_t pid, t_data *data)
+void	ft_unset(t_cmd *cmd, pid_t pid)
 {
-	(void)data;
 	int	i;
 
 	i = 1;
 	while (cmd->full_cmd[i])
 	{
-		if (env_name_exists(data->n_env, cmd->full_cmd[i]))
-			delete_env(&data->n_env, cmd->full_cmd[i], data);
+		if (env_name_exists(get_data()->n_env, cmd->full_cmd[i]))
+			delete_env(get_data()->n_env, cmd->full_cmd[i]);
 		i++;
 	}
-	printf("Finished unset loop\n");
-	check_for_child(pid, 0, data);
+	check_for_child(pid, 0);
 }
 
 // int	main(int argc, char **argv, char **envp)

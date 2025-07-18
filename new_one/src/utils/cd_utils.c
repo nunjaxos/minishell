@@ -1,41 +1,36 @@
 #include "../../include/executor.h"
 
-char	*get_valid_path(t_cmd *cmd, pid_t pid, t_data *data)
+char	*get_valid_path(t_cmd *cmd, pid_t pid)
 {
 	char	*path;
 
-	path = cd_error(cmd, pid, data);
-	if (!ft_strcmp(cmd->full_cmd[1], "~") || ft_strslen(cmd->full_cmd) == 1)
+	path = cd_error(cmd, pid);
+	if (!ft_strcmp(cmd->full_cmd[1], "~") || cmd->count == 1)
 	{
-		path = get_value("HOME", data->n_env);
+		path = get_value("HOME", get_data()->n_env);
 		if (!path)
 		{
 			ft_putstr_fd("cd: Error: HOME not set\n", 2);
-			data->exit_status = 1;
-			check_for_child(pid, 1, data);
+			get_data()->exit_status = 1;
+			check_for_child(pid, 1);
 			return (NULL);
 		}
 	}
 	return (path);
 }
 
-void	update_pwd(t_env *env, t_data *data)
+void	update_pwd(t_env *env)
 {
-	(void)data;
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
-	if (!pwd)
-	{
-		perror("getcwd");
-		exit(1); // or return error
-	}
+	add_alloc(pwd);
 	if (get_value("PWD", env))
 	{
-		// free(get_value("PWD", env));
+		ft_free(get_value("PWD", env));
 		edit_env(env, "PWD", ft_strdup(pwd));
 	}
-	// free(pwd);
+	ft_free(pwd);
 }
 
 void	check_shlvl(t_env *env)

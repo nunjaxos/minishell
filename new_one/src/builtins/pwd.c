@@ -1,14 +1,15 @@
 #include "../../include/executor.h"
 
-void	ft_pwd(pid_t pid, t_data *data)
+void	ft_pwd(pid_t pid)
 {
 	(void)pid;
 	char	*pwd;
 
 	pwd = getcwd(NULL, 0);
-	add_alloc(pwd, &(data->alloc));
+	add_alloc(pwd);
 	ft_putendl_fd(pwd, 1);
-	check_for_child(pid, 0, data);
+	ft_free(pwd);
+	check_for_child(pid, 0);
 }
 
 // int	main(void)

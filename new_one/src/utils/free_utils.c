@@ -1,13 +1,11 @@
 #include "../../include/executor.h"
 
-void	garbage_removal(t_alloc **alloc)
+void	garbage_removal(void)
 {
 	t_alloc	*list;
 	t_alloc	*tmp;
 
-	if (!alloc || !*alloc)
-		return ;
-	list = *alloc;
+	list = get_data()->alloc;
 	while (list)
 	{
 		tmp = list->next;
@@ -23,59 +21,62 @@ void	garbage_removal(t_alloc **alloc)
 		}
 		list = tmp;
 	}
-	*alloc = NULL;
+	get_data()->alloc = NULL;
 }
 
-void free_data(t_data *data)
-{	
-    garbage_removal(&(data->alloc));
-    rl_clear_history();
-}
-
-static void remove_from_list(t_alloc **alloc, t_alloc **curr, t_alloc *prev)
+static void	remove_from_list(t_alloc **list, t_alloc *prev)
 {
-    if (prev)
-        prev->next = (*curr)->next;
-    else
-        *alloc = (*curr)->next;
+	if (prev)
+		prev->next = (*list)->next;
+	else
+		get_data()->alloc = (*list)->next;
 }
 
-static void	free_allocated_memory(t_alloc *curr)
+static void	free_allocated_memory(t_alloc *list)
 {
-	if (curr->allocated)
+	if (list->allocated)
 	{
-		free(curr->allocated);
-		curr->allocated = NULL;
-	}
-}
-static void	free_curr_node(t_alloc *curr)
-{
-	if (curr)
-	{
-		free(curr);
-		curr = NULL;
+		free(list->allocated);
+		list->allocated = NULL;
 	}
 }
 
-void ft_free(void *ptr, t_alloc **alloc)
+static void	free_list_node(t_alloc *list)
 {
-    t_alloc *curr;
-    t_alloc *prev;
+	if (list)
+	{
+		free(list);
+		list = NULL;
+	}
+}
 
-    if (!ptr || !alloc || !*alloc)
-        return ;
-    curr = *alloc;
-    prev = NULL;
-    while (curr)
-    {
-        if (curr->allocated == ptr)
-        {
-            remove_from_list(alloc, &curr, prev);
-            free_allocated_memory(curr);
-            free_curr_node(curr);
-            break ;
-        }
-        prev = curr;
-        curr = curr->next;
-    }
+void	ft_free(void *ptr)
+{
+	t_alloc	*list;
+	t_alloc	*prev;
+
+	if (!ptr)
+		return ;
+	list = get_data()->alloc;
+	prev = NULL;
+	while (list)
+	{
+		if (list->allocated == ptr)
+		{
+			remove_from_list(&list, prev);
+			free_allocated_memory(list);
+			free_list_node(list);
+			break ;
+		}
+		prev = list;
+		list = list->next;
+	}
+}
+
+void	free_data(t_data *data)
+{
+	garbage_removal();
+	free(data);
+	data = NULL;
+	rl_clear_history();
 }

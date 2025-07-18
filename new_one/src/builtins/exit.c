@@ -37,11 +37,11 @@ long long	num(t_cmd *cmd, size_t min_limit, int last)
 	return (test);
 }
 
-void	exit_norm(t_cmd *cmd, int *exit_status, pid_t pid, t_data *data)
+void	exit_norm(t_cmd *cmd, int *exit_status, pid_t pid)
 {
 	if (pid)
 		ft_putstr_fd("exit\n", 1);
-	if (ft_strslen(cmd->full_cmd) > 1)
+	if (cmd->count > 1)
 	{
 		if (!args_check(cmd))
 		{
@@ -50,7 +50,7 @@ void	exit_norm(t_cmd *cmd, int *exit_status, pid_t pid, t_data *data)
 			ft_putstr_fd(": numeric argument required\n", 2);
 			*exit_status = 2;
 		}
-		else if (ft_strslen(cmd->full_cmd) == 2)
+		else if (cmd->count == 2)
 			*exit_status = ft_atoi(cmd->full_cmd[1]);
 		else
 		{
@@ -59,29 +59,30 @@ void	exit_norm(t_cmd *cmd, int *exit_status, pid_t pid, t_data *data)
 		}
 	}
 	else
-		*exit_status = data->exit_status;
+		*exit_status = get_data()->exit_status;
 }
 
-int	ft_exit(t_cmd *cmd, pid_t pid, t_data *data)
+int	ft_exit(t_cmd *cmd, pid_t pid)
 {
 	int	exit_status;
 
 	exit_status = 0;
-	exit_norm(cmd, &exit_status, pid, data);
-	if (ft_strslen(cmd->full_cmd) > 2)
+	exit_norm(cmd, &exit_status, pid);
+	if (cmd->count > 2)
 	{
 		if (!args_check(cmd))
 			exit_status = 2;
 		else
 		{
-			check_for_child(pid, 1, data);
+			check_for_child(pid, 1);
 			return (1);
 		}
 	}
-	check_for_child(pid, data->exit_status, data);
-	// free(data);
+	check_for_child(pid, exit_status);
+	free_data(get_data());
 	exit(exit_status);
 }
+
 
 // int	main(int argc, char **argv, char **envp)
 // {

@@ -16,7 +16,7 @@ int	check_for_doubles(char *args)
 	return (0);
 }
 
-void	ft_echo(t_cmd *cmd, pid_t pid, t_data *data)
+void	ft_echo(t_cmd *cmd, pid_t pid)
 {
 	int	i;
 
@@ -34,12 +34,13 @@ void	ft_echo(t_cmd *cmd, pid_t pid, t_data *data)
 	}
 	if (cmd->full_cmd[1] && !check_for_doubles(cmd->full_cmd[1]))
 	{
-		check_for_child(pid, 0, data);
+		check_for_child(pid, 0);
 		return ;
 	}
 	ft_putstr_fd("\n", 1);
-	check_for_child(pid, 0, data);
+	check_for_child(pid, 0);
 }
+
 
 // int main(int argc, char **argv)
 // {

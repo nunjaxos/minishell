@@ -14,20 +14,20 @@ int	str_index(const char *str, int ch)
 	return (-1);
 }
 
-char *ft_strjoin_free(char *s1, char *s2, int flag, t_data *data)
+char *ft_strjoin_free(char *s1, char *s2, int flag)
 {
 	char *tmp = ft_strjoin(s1, s2); // returns malloc
-	add_alloc(tmp, &(data->alloc)); // <-- track it!
+	add_alloc(tmp); // <-- track it!
 	
 	if (s1 && s2 && flag == 2)
 	{
-		ft_free(s1, &(data->alloc));
-		ft_free(s2, &(data->alloc));
+		ft_free(s1);
+		ft_free(s2);
 	}
 	else if (s1 && flag == 1)
-		ft_free(s1, &(data->alloc));
+		ft_free(s1);
 	else if (s2 && !flag)
-		ft_free(s2, &(data->alloc));
+		ft_free(s2);
 	return tmp;
 }
 
@@ -56,13 +56,13 @@ int	name_len(char *str)
 	return (i);
 }
 
-char *ft_strjoin_malloc(char *s1, char *s2, t_data *data)
+char *ft_strjoin_malloc(char *s1, char *s2)
 {
 	char *result;
 	size_t len1 = ft_strlen(s1);
 	size_t len2 = ft_strlen(s2);
 
-	result = ft_malloc(len1 + len2 + 1, &data->alloc);
+	result = ft_malloc(len1 + len2 + 1);
 	if (!result)
 		return NULL;
 	ft_memcpy(result, s1, len1);
@@ -71,7 +71,7 @@ char *ft_strjoin_malloc(char *s1, char *s2, t_data *data)
 	return result;
 }
 
-char *ft_strdup_track(const char *s, int len, t_alloc **alloc)
+char *ft_strdup_track(const char *s, int len)
 {
 	char *dup;
 
@@ -82,6 +82,6 @@ char *ft_strdup_track(const char *s, int len, t_alloc **alloc)
 
 	if (!dup)
 		return NULL;
-	add_alloc(dup, alloc);
+	add_alloc(dup);
 	return dup;
 }

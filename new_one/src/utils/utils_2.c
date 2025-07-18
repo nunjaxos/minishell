@@ -7,7 +7,7 @@ void	error_display_norm(t_cmd *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->full_cmd[0], 2);
 		ft_putstr_fd(": No such file or directory\n", 2);
-		// free_parser(get_parser());
+		free_data(get_data());
 		exit(127);
 	}
 	else if (cmd->access == NOT_EXEC)
@@ -15,7 +15,7 @@ void	error_display_norm(t_cmd *cmd)
 		ft_putstr_fd("minishell: ", 2);
 		ft_putstr_fd(cmd->full_cmd[0], 2);
 		ft_putstr_fd(": Permission denied\n", 2);
-		// free_parser(get_parser());
+		free_data(get_data());
 		exit(126);
 	}
 }
@@ -26,14 +26,14 @@ void	error_display(t_cmd *cmd)
 	{
 		if (cmd->access == NULL_CMD)
 		{
-			// free_parser(get_parser()),
+			free_data(get_data()),
 			exit(0);
 		}
 		if (cmd->access == CMD_NOT_FOUND)
 		{
 			ft_putstr_fd(cmd->full_cmd[0], 2);
 			ft_putstr_fd(" : command not found\n", 2);
-			// free_parser(get_parser());
+			free_data(get_data());
 			exit(127);
 		}
 		else if (cmd->access == IS_A_DIR)
@@ -41,14 +41,14 @@ void	error_display(t_cmd *cmd)
 			ft_putstr_fd("minishell: ", 2);
 			ft_putstr_fd(cmd->full_cmd[0], 2);
 			ft_putstr_fd(": Is a directory\n", 2);
-			// free_parser(get_parser());
+			free_data(get_data());
 			exit(126);
 		}
 		error_display_norm(cmd);
 	}
 }
 
-char	**convert_path_to_array(t_env *env, t_data *data)
+char	**convert_path_to_array(t_env *env)
 {
 	char	**paths;
 	t_env	*tmp;
@@ -56,17 +56,17 @@ char	**convert_path_to_array(t_env *env, t_data *data)
 
 	tmp = env;
 	i = get_size(tmp);
-	paths = (char **)ft_malloc(sizeof(char *) * (i + 1), &(data->alloc));
+	paths = (char **)ft_malloc(sizeof(char *) * (i + 1));
 	if (!paths)
 		return (NULL);
 	tmp = env;
 	i = 0;
-	convert_path_to_arr_norm(tmp, paths, &i, data);
+	convert_path_to_arr_norm(tmp, paths, &i);
 	paths[i] = NULL;
 	return (paths);
 }
 
-void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i, t_data *data)
+void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i)
 {
 	char	*temp;
 
@@ -75,9 +75,9 @@ void	convert_path_to_arr_norm(t_env *tmp, char **paths, int *i, t_data *data)
 		if (tmp->value)
 		{
 			temp = ft_strjoin(tmp->name, "=");
-			temp = ft_strjoin_free(temp, tmp->value, 1, data);
+			temp = ft_strjoin_free(temp, tmp->value, 1);
 			paths[(*i)] = ft_strdup(temp);
-			ft_free(temp, &(data->alloc));
+			ft_free(temp);
 			*i += 1;
 		}
 		tmp = tmp->next;
@@ -91,7 +91,7 @@ int	*get_lastpid(void)
 	return (&pid);
 }
 
-void	pipe_utils(t_cmd *cmd, int status, t_data *data)
+void	pipe_utils(t_cmd *cmd, int status)
 {
 	if (cmd->pid != *get_lastpid())
 		waitpid(cmd->pid, &status, 0);
@@ -99,8 +99,8 @@ void	pipe_utils(t_cmd *cmd, int status, t_data *data)
 	{
 		waitpid(cmd->pid, &status, 0);
 		if (WIFEXITED(status))
-			data->exit_status = WEXITSTATUS(status);
+			get_data()->exit_status = WEXITSTATUS(status);
 		else if (WIFSIGNALED(status))
-			data->exit_status = WTERMSIG(status) + 128;
+			get_data()->exit_status = WTERMSIG(status) + 128;
 	}
 }

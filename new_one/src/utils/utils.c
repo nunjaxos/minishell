@@ -1,15 +1,15 @@
 #include "../../include/executor.h"
 
-int	check_for_child(pid_t pid, int exit_stat, t_data *data) 
+int	check_for_child(pid_t pid, int exit_stat) 
 {
 	if (pid == 0)
 	{
-		data->exit_status = exit_stat;
-		free_data(data);
+		get_data()->exit_status = exit_stat;
+		free_data(get_data());
 		exit(exit_stat);
 	}
 	else
-		data->exit_status = exit_stat;
+		get_data()->exit_status = exit_stat;
 	return (0);
 }
 
@@ -55,14 +55,14 @@ int	ft_strcmp(char *s1, char *s2)
 	return (s1[i] - s2[i]);
 }
 
-char *ft_strdup_alloc(const char *src, t_data *data)
+char *ft_strdup_alloc(const char *src)
 {
 	char	*new;
 	int		i = 0;
 
 	while (src[i])
 		i++;
-	new = ft_malloc(sizeof(char) * (i + 1), &(data->alloc));
+	new = ft_malloc(sizeof(char) * (i + 1));
 	if (!new)
 		return (NULL);
 	i = -1;
@@ -72,7 +72,7 @@ char *ft_strdup_alloc(const char *src, t_data *data)
 	return (new);
 }
 
-char *ft_substr_alloc(char const *s, unsigned int start, size_t len, t_data *data)
+char *ft_substr_alloc(char const *s, unsigned int start, size_t len)
 {
 	char	*sub;
 	size_t	i = 0;
@@ -80,10 +80,10 @@ char *ft_substr_alloc(char const *s, unsigned int start, size_t len, t_data *dat
 	if (!s)
 		return (NULL);
 	if (start >= ft_strlen(s))
-		return (ft_strdup_alloc("", data));
+		return (ft_strdup_alloc(""));
 	if (ft_strlen(s + start) < len)
 		len = ft_strlen(s + start);
-	sub = ft_malloc(sizeof(char) * (len + 1), &(data->alloc));
+	sub = ft_malloc(sizeof(char) * (len + 1));
 	if (!sub)
 		return (NULL);
 	while (i < len && s[start + i])
