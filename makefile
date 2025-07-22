@@ -3,7 +3,7 @@ NAME = minishell
 
 # Compiler and flags
 CC = cc
-CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft
+CFLAGS = -Wall -Wextra -Werror -Iinclude -Ilibft -g3
 LDFLAGS = -lreadline
 
 # Libft

@@ -50,13 +50,22 @@ t_env	*create_env_node(const char *env)
 		return (NULL);
 	sep = strchr(env, '=');
 	if (!sep)
-		return (free(node), NULL);
-	node->name = ft_strndup(env, sep - env);
+	{
+		node->name = ft_strdup(env);
+		if (!node->name)
+			return (free(node), NULL);
+		node->value = NULL;
+		node->next = NULL;
+		return (node);
+	}
+	else
+		node->name = ft_strndup(env, sep - env);	
 	if (!node->name)
 		return (free(node), NULL);
 	node->value = strdup(sep + 1);
 	if (!node->value)
 		return (free(node->name), free(node), NULL);
+
 	node->next = NULL;
 	return (node);
 }
@@ -323,23 +332,25 @@ static int update_existing_var(t_env *node, char *new_value)
 
 static int create_new_var(char *name, char *value)
 {
-    t_env *new_node;
-    char *full_var;
+	t_env *new_node;
+	char *full_var;
 
-    if (!name || !value)
-        return (0);
-    
-    full_var = ft_strjoin3(name, "=", value);
-    if (!full_var)
-        return (0);
-    
-    new_node = create_env_node(full_var);
-    free(full_var);
-    if (!new_node)
-        return (0);
-    
-    add_env_back(&g_envp, new_node);
-    return (1);
+	if (!name)
+		return (0);
+
+	if (!value)
+		full_var = ft_strdup(name);
+	else
+		full_var = ft_strjoin3(name, "=", value);
+	if (!full_var)
+		return (0);
+	new_node = create_env_node(full_var);
+	free(full_var);
+	if (!new_node)
+		return (0);
+
+	add_env_back(&g_envp, new_node);
+	return (1);
 }
 
 /* ---------------------- ARGUMENT PROCESSING ---------------------- */
@@ -350,7 +361,7 @@ static int process_var_assignment(char *arg)
     t_env *tmp;
 
     if (!sep)
-        return (0);
+        return (create_new_var(arg, NULL));
     
     *sep = '\0';  // Temporarily split at '='
     tmp = g_envp;
